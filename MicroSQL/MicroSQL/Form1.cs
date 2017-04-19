@@ -68,5 +68,11 @@ namespace MicroSQL
                 //rtbUserInput.Text = rtbUserInput.Text + "'";
             }
         }
+
+        private void btnEjecutar_Click(object sender, EventArgs e)
+        {
+            string[] sintax = rtbUserInput.Lines;
+            Utilities.reconizeCode(sintax);
+        }
     }
 }
