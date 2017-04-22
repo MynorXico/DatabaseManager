@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Windows.Forms;
 using System.Drawing;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace MicroSQL
@@ -20,11 +21,13 @@ namespace MicroSQL
         public static Color QuotedWordsColor = ColorTranslator.FromHtml("#F92672");
 
         public static Dictionary<string, string> DataTypes = new Dictionary<string, string>();
+
         public static void FillDictionaries()
         {
             DataTypes.Add("INT", "INT");
             DataTypes.Add("VARCHAR", "VARCHAR");
             DataTypes.Add("DATETIME" , "DATETIME");
+            DataTypes.Add("PRIMARY KEY", "PRIMARY KEY");
             ReservedWords.Add("SELECT", "SELECT");
             ReservedWords.Add("FROM", "FROM");
             ReservedWords.Add("DELETE", "DELETE");
@@ -37,6 +40,7 @@ namespace MicroSQL
             DataTypes.Add("int", "int");
             DataTypes.Add("varchar", "varchar");
             DataTypes.Add("datetime", "datetime");
+            DataTypes.Add("primary key", "primary key");
             ReservedWords.Add("select", "select");
             ReservedWords.Add("from", "from");
             ReservedWords.Add("delete", "delete");
@@ -50,13 +54,13 @@ namespace MicroSQL
 
         public static Dictionary<string, string> ReservedWords = new Dictionary<string, string>();
 
-        public static void reconizeCode(string [] sintax)
+        public static void reconizeCode(string[] sintax)
         {
-            foreach (var command in ReservedWords.Keys)
+            for (int i = 0; i < ReservedWords.Count; i++)
             {
-                if (command == sintax[0])
+                if (ReservedWords.ElementAt(i).Value.Equals(sintax[0]))
                 {
-                    detectCommand(command, sintax);
+                    detectCommand(ReservedWords.ElementAt(i).Key.ToUpper().ToString(), sintax);
                     break;
                 }
             }
@@ -64,18 +68,20 @@ namespace MicroSQL
 
         public static void detectCommand(string command, string [] sintax)
         {
-            if (command.ToUpper().Equals("SELECT"))
+            if (command.Equals("SELECT"))
             {
                
             }
 
-            if (command.ToUpper().Equals("DELETE"))
+            if (command.Equals("DELETE"))
             {
 
             }
 
-            if (command.ToUpper().Equals("CREATE TABLE"))
+            if (command.Equals("CREATE TABLE"))
             {
+                bool tableCreated = false;
+                string parameterName;
                 string tableName = sintax[1];
                 if (sintax[2] != "(")
                 {
@@ -83,28 +89,174 @@ namespace MicroSQL
                 }
                 else
                 {
-                    string[] spaces = sintax[3].Split(' ');
-                    
-                    
+                    bool primarykey = false;
+                    string[] spaces;
+                    int count = 3;
+                    bool errorSintaxis = true;
+                    bool tableEnd = false;
+
+                    while (count<sintax.Length)
+                    {
+                        spaces = sintax[count].Split(' ');
+                        string comando = "";
+                        string comandoCompleto = "";
+                        if (spaces.Length == 1)
+                        {
+                            if (spaces[0].Equals(")"))
+                            {
+                                tableEnd = true;
+                            }
+                            if (spaces[0].ToUpper().Equals(ReservedWords.ElementAt(8).Key.ToString()))
+                            {
+                                MessageBox.Show("GO"); 
+                            }
+                        }
+                        else
+                        {
+                            comando = spaces[1].Trim(',').ToUpper();
+                            comandoCompleto = spaces[1].ToUpper();
+                        }
+                        if (!tableEnd)
+                        {
+                            for (int i = 0; i < DataTypes.Count; i++)
+                            {
+                                if (DataTypes.ElementAt(i).Value.ToString().Equals(comando))
+                                {
+                                    parameterName = spaces[0];
+
+                                    if (comandoCompleto.Equals("INT,"))
+                                    {
+                                        errorSintaxis = false;
+                                        //CREAR EL NODO DE LA TABLA
+                                    }
+                                    else if (comandoCompleto.Equals("INT"))
+                                    {
+                                        if ((spaces[2].ToUpper().Equals("PRIMARY") && spaces[3].ToUpper().Equals("KEY,")) || (spaces[2].ToUpper().Equals("PRIMARY") && spaces[3].ToUpper().Equals("KEY")))
+                                        {
+                                            if (spaces[3].ToUpper().Equals("KEY,"))
+                                            {
+                                                primarykey = true;
+                                                errorSintaxis = false;
+                                            }
+                                            else
+                                            {
+                                                if (sintax[count + 1].Split(' ')[0].Equals(")"))
+                                                {
+                                                    primarykey = true;
+                                                    errorSintaxis = false;
+                                                }
+                                                else
+                                                {
+                                                    MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (comandoCompleto.Equals("DATETIME,"))
+                                    {
+                                        //CREAR EL NODO
+                                        errorSintaxis = false;
+                                    }
+                                    else if (comandoCompleto.Equals("DATETIME"))
+                                    {
+                                        if (!sintax[count + 1].Split(' ')[0].Equals(")"))
+                                        {
+                                            MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
+                                        }
+                                        else
+                                        {
+                                            errorSintaxis = false;
+                                        }
+                                    }
+                                    if (comandoCompleto.Equals("VARCHAR(100),"))
+                                    {
+                                        //CREAR EL NODO
+                                        errorSintaxis = false;
+                                    }
+                                    else if (comandoCompleto.Equals("VARCHAR(100)"))
+                                    {
+                                        if (!sintax[count + 1].Split(' ')[0].Equals(")"))
+                                        {
+                                            MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
+                                        }
+                                        else
+                                        {
+                                            errorSintaxis = false;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (!errorSintaxis)
+                        {
+                            MessageBox.Show("Tabla " + tableName + " creada exitosamente!");
+                            tableCreated = true;
+                        }
+                        count++;
+                    }
                 }
             }
 
-            if (command.ToUpper().Equals("DROP TABLE"))
+            if (command.Equals("DROP TABLE"))
             {
 
             }
 
-            if (command.ToUpper().Equals("INSERT INTO"))
+            if (command.Equals("INSERT INTO"))
             {
 
             }
 
-            if (command.ToUpper().Equals("GO"))
+            if (command.Equals("GO"))
             {
 
             }
         }
-     
+        
+        public static void UpLoadFile()
+        {
+            string path = "microsql.ini";
+            if (!File.Exists(path))
+            {
+                FillDictionaries();
+                string[] lines = new string[DataTypes.Count + ReservedWords.Count];
+                int count = 0;
+                //Agregar todos los datos del diccionario de Tipos de Dato 
+                for (int i = 0; i < DataTypes.Count; i++)
+                {
+                    lines[i] = DataTypes.ElementAt(i).Key.ToString()+ ","+DataTypes.ElementAt(i).Value.ToString();
+                    count++;
+                }
+
+                //Agregar todos los datos del diccionario de palabras reservadas
+                for (int i = 0; i < ReservedWords.Count; i++)
+                {
+                    lines[count + i] = ReservedWords.ElementAt(i).Key.ToString()+ "," + ReservedWords.ElementAt(i).Value.ToString();
+                }
+                File.WriteAllLines(path, lines);
+            }
+            else
+            {
+                string[] lines = File.ReadAllLines(path);
+                for (int i = 0; i < 8; i++)
+                {
+                    string[] words = lines[i].Split(',');
+                    DataTypes.Add(words[0], words[1]);
+                }
+
+                for (int i = 8; i < 26; i++)
+                {
+                    string[] words = lines[i].Split(',');
+                    if (i == 25)
+                    {
+                        Console.WriteLine();
+                    }
+                    ReservedWords.Add(words[0], words[1]);
+                }
+            }
+        }
+
         public static void HighLightQuoted(RichTextBox rt, Color color)
         {
             Regex RegularExpression = new Regex("'(.*)(.*)'");

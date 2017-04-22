@@ -17,7 +17,6 @@ namespace MicroSQL
         public Form1()
         {
             InitializeComponent();
-            Utilities.FillDictionaries();
         }
 
         private void rtbUserInput_TextChanged(object sender, EventArgs e)
