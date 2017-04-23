@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v1.0",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v1.0": {
+      "Laboratorio 3/1.0.0": {
+        "dependencies": {
+          "BTree": "1.0.0"
+        },
+        "runtime": {
+          "Laboratorio 3.dll": {}
+        }
+      },
+      "BTree/1.0.0": {
+        "runtime": {
+          "BTree.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Laboratorio 3/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BTree/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
