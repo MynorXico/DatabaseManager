@@ -95,14 +95,15 @@ namespace MicroSQL
                     bool errorSintaxis = true;
                     bool tableEnd = false;
 
-                    while (count<sintax.Length)
+                    while (count<sintax.Length && !tableEnd)
                     {
                         spaces = sintax[count].Split(' ');
                         string comando = "";
+                        bool commandExist = false;
                         string comandoCompleto = "";
                         if (spaces.Length == 1)
                         {
-                            if (spaces[0].Equals(")"))
+                            if (spaces[0].Equals(")") && !errorSintaxis)
                             {
                                 tableEnd = true;
                             }
@@ -120,78 +121,136 @@ namespace MicroSQL
                         {
                             for (int i = 0; i < DataTypes.Count; i++)
                             {
-                                if (DataTypes.ElementAt(i).Value.ToString().Equals(comando))
+                                if (comando.Equals(""))
                                 {
-                                    parameterName = spaces[0];
+                                    commandExist = false;
+                                }
+                                else
+                                {
+                                    if (DataTypes.ElementAt(i).Value.ToString().Equals(comando))
+                                    {
+                                        commandExist = true;
+                                    }
+                                }
+                            }
 
-                                    if (comandoCompleto.Equals("INT,"))
+                            if (commandExist)
+                            {
+                                parameterName = spaces[0];
+
+                                if (comandoCompleto.Equals("INT,"))
+                                {
+                                    if (sintax[count + 1].Split(' ')[0].Equals(")"))
+                                    {
+                                        MessageBox.Show("No puede ir una coma en la ultima linea, eliminela e intente de nuevo!");
+                                        break;
+                                    }
+                                    else
                                     {
                                         errorSintaxis = false;
-                                        //CREAR EL NODO DE LA TABLA
                                     }
-                                    else if (comandoCompleto.Equals("INT"))
+                                    //CREAR EL NODO DE LA TABLA
+                                }
+                                else if (comandoCompleto.Equals("INT"))
+                                {
+                                    if ((spaces[2].ToUpper().Equals("PRIMARY") && spaces[3].ToUpper().Equals("KEY,")) || (spaces[2].ToUpper().Equals("PRIMARY") && spaces[3].ToUpper().Equals("KEY")))
                                     {
-                                        if ((spaces[2].ToUpper().Equals("PRIMARY") && spaces[3].ToUpper().Equals("KEY,")) || (spaces[2].ToUpper().Equals("PRIMARY") && spaces[3].ToUpper().Equals("KEY")))
+                                        if (spaces[3].ToUpper().Equals("KEY,"))
                                         {
-                                            if (spaces[3].ToUpper().Equals("KEY,"))
+                                            if (sintax[count + 1].Split(' ')[0].Equals(")"))
+                                            {
+                                                MessageBox.Show("No puede ir una coma en la ultima linea, eliminela e intente de nuevo!");
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                primarykey = true;
+                                                errorSintaxis = false;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (sintax[count + 1].Split(' ')[0].Equals(")"))
                                             {
                                                 primarykey = true;
                                                 errorSintaxis = false;
                                             }
                                             else
                                             {
-                                                if (sintax[count + 1].Split(' ')[0].Equals(")"))
-                                                {
-                                                    primarykey = true;
-                                                    errorSintaxis = false;
-                                                }
-                                                else
-                                                {
-                                                    MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
-                                                }
+                                                MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
+                                                break;
                                             }
                                         }
                                     }
+                                }
 
-                                    if (comandoCompleto.Equals("DATETIME,"))
+                                if (comandoCompleto.Equals("DATETIME,"))
+                                {
+                                    //CREAR EL NODO
+                                    if (sintax[count + 1].Split(' ')[0].Equals(")"))
                                     {
-                                        //CREAR EL NODO
+                                        MessageBox.Show("No puede ir una coma en la ultima linea, eliminela e intente de nuevo!");
+                                        break;
+                                    }
+                                    else
+                                    {
                                         errorSintaxis = false;
-                                    }
-                                    else if (comandoCompleto.Equals("DATETIME"))
-                                    {
-                                        if (!sintax[count + 1].Split(' ')[0].Equals(")"))
-                                        {
-                                            MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
-                                        }
-                                        else
-                                        {
-                                            errorSintaxis = false;
-                                        }
-                                    }
-                                    if (comandoCompleto.Equals("VARCHAR(100),"))
-                                    {
-                                        //CREAR EL NODO
-                                        errorSintaxis = false;
-                                    }
-                                    else if (comandoCompleto.Equals("VARCHAR(100)"))
-                                    {
-                                        if (!sintax[count + 1].Split(' ')[0].Equals(")"))
-                                        {
-                                            MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
-                                        }
-                                        else
-                                        {
-                                            errorSintaxis = false;
-                                        }
                                     }
                                 }
+                                else if (comandoCompleto.Equals("DATETIME"))
+                                {
+                                    if (!sintax[count + 1].Split(' ')[0].Equals(")"))
+                                    {
+                                        MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        errorSintaxis = false;
+                                    }
+                                }
+                                if (comandoCompleto.Equals("VARCHAR(100),"))
+                                {
+                                    //CREAR EL NODO
+                                    if (sintax[count + 1].Split(' ')[0].Equals(")"))
+                                    {
+                                        MessageBox.Show("No puede ir una coma en la ultima linea, eliminela e intente de nuevo!");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        errorSintaxis = false;
+                                    }
+                                }
+                                else if (comandoCompleto.Equals("VARCHAR(100)"))
+                                {
+                                    if (!sintax[count + 1].Split(' ')[0].Equals(")"))
+                                    {
+                                        MessageBox.Show("Error de sintaxis, hace falta una , al final de los argumentos.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        errorSintaxis = false;
+                                    }
+                                }
+                            }else{
+                                MessageBox.Show("Hace falta tipo de dato, especifiquelo y vuelva a intentar!");
+                                break;
                             }
                         }
-                        if (!errorSintaxis)
+                        if (!primarykey && tableEnd)
                         {
-                            MessageBox.Show("Tabla " + tableName + " creada exitosamente!");
-                            tableCreated = true;
+                            MessageBox.Show("Hace falta la llave primaria, agreguela y vuelva a ejecutar!");
+                            break; 
+                        }
+                        else
+                        {
+                            if (!errorSintaxis && tableEnd)
+                            {
+                                MessageBox.Show("Tabla " + tableName + " creada exitosamente!");
+                                tableCreated = true;
+                            }
                         }
                         count++;
                     }
