@@ -1,6 +1,6 @@
 ﻿namespace MicroSQL
 {
-    partial class Form1
+    partial class IU
     {
         /// <summary>
         /// Variable del diseñador necesaria.

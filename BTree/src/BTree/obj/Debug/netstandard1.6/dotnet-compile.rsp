@@ -1,5 +1,5 @@
---temp-output:C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\obj\Debug\netstandard1.6\
---out:C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\bin\Debug\netstandard1.6\BTree.dll
+--temp-output:C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\obj\Debug\netstandard1.6\
+--out:C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\bin\Debug\netstandard1.6\BTree.dll
 --define:DEBUG
 --define:TRACE
 --define:NETSTANDARD1_6
@@ -55,11 +55,11 @@
 --reference:C:\Users\Maynor\.nuget\packages\System.Threading.Timer\4.0.1\ref\netstandard1.2\System.Threading.Timer.dll
 --reference:C:\Users\Maynor\.nuget\packages\System.Xml.ReaderWriter\4.0.11\ref\netstandard1.3\System.Xml.ReaderWriter.dll
 --reference:C:\Users\Maynor\.nuget\packages\System.Xml.XDocument\4.0.11\ref\netstandard1.3\System.Xml.XDocument.dll
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\ArbolB.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\FileManagment.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\IAutoFormattable.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\IFabricaTextoTamañoFijo.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\ITextoTamañoFijo.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\NodoB.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\SizesNSpecialCharacters.cs
-C:\Users\Maynor\Documents\GitHub\ImplementacionArbolB\BTree\src\BTree\Properties\AssemblyInfo.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\ArbolB.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\FileManagment.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\IAutoFormattable.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\IFabricaTextoTamañoFijo.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\ITextoTamañoFijo.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\NodoB.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\SizesNSpecialCharacters.cs
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\BTree\src\BTree\Properties\AssemblyInfo.cs

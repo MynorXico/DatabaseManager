@@ -4,20 +4,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections;
+
 namespace EstructurasDeDatos
 {
     public class BTree<T, TKey>
-        where T : IFixedLength
+        where T : IFixedLength, IAutoFormattable
         where TKey : IComparable, IFixedLength, IAutoFormattable
     {
         int Root;
         int AvailablePointer;
- 
+
         FileStream FileStream;
         string FilePath;
         IFixedLengthFactory<T> ContentFactory;
         IFixedLengthFactory<TKey> KeyFactory;
         public int Degree { get; set; }
+
+
+        public List<T> GetElements()
+        {
+            List<T> Elements = new List<T>();
+            RecorrerInOrdenRecursivo(Root, Elements);
+            return Elements;
+        }
+
+        private void RecorrerInOrdenRecursivo(int posicionActual, List<T> Elements)
+        {
+            if (posicionActual == SizesNSpecialCharacters.NullPointer)
+            {
+                return;
+            }
+            BNode<T, TKey> nodoActual = BNode<T, TKey>.DiskRead(File, Degree, posicionActual, ContentFactory, KeyFactory);
+            for (int i = 0; i < nodoActual.ChildrenPointers.Count; i++)
+            {
+                RecorrerInOrdenRecursivo(nodoActual.ChildrenPointers[i], Elements);
+                if ((i < nodoActual.Keys.Count) && (nodoActual.Keys[i].CompareTo(KeyFactory.CreateNull())!=0))
+                {
+                    Elements.Add(nodoActual.Values[i]);
+                }
+            }
+        }
 
         public int RootPointer
         {
@@ -161,6 +188,8 @@ namespace EstructurasDeDatos
                 MoveUp(Parent, UpwardMovingKey, UpwardMovingValue, Sibling.Pointer);
             }
         }
+
+
         private BNode<T, TKey> BTreeSearch(int CrawlerPointer, TKey Key, out int Pointer)
         {
             BNode<T, TKey> Crawler = BNode<T, TKey>.DiskRead(File, Degree, CrawlerPointer, TFactory, TKeyFactory);

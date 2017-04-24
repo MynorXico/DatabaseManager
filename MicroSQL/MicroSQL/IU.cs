@@ -12,9 +12,9 @@ using System.Collections;
 
 namespace MicroSQL
 {
-    public partial class Form1 : Form
+    public partial class IU : Form
     {
-        public Form1()
+        public IU()
         {
             InitializeComponent();
             Utilities.FillDictionaries();

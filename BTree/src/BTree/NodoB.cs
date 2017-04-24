@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Collections;
 
 namespace EstructurasDeDatos
 {
-    public class BNode<T, TKey> 
-        where T : IFixedLength
+    public class BNode<T, TKey>
+        where T : IFixedLength, IAutoFormattable
         where TKey: IComparable, IFixedLength, IAutoFormattable
     {
         private IFixedLengthFactory<TKey> KeyFactory;
@@ -24,7 +25,7 @@ namespace EstructurasDeDatos
             }
         }
         public List<int> ChildrenPointers { get; set; }
-        private List<TKey> Keys { get; set; }
+        public List<TKey> Keys { get; set; }
         public List<T> Values { get; set; }
         public int N
         {
@@ -69,7 +70,7 @@ namespace EstructurasDeDatos
                 Counter += 2; // Separadores adicionales
                 Counter += (KeyFactory.CreateNull().Format().Length + 1) * (Degree - 1); // Tamaño Llaves
                 Counter += 2; // Separadores adicionales
-                Counter += (Values[0].Length + 1) * (Degree - 1); // Tamaño Datos
+                Counter += (Values[0].Format().Length + 1) * (Degree - 1); // Tamaño Datos
                 Counter += Environment.NewLine.Length; // Tamaño del Enter
                 return Counter * Encoding.UTF8.GetByteCount("1");
             }
@@ -533,5 +534,8 @@ namespace EstructurasDeDatos
             }
             DiskWrite(File, 65);
         }
+
+       
+
     }
 }

@@ -7,17 +7,22 @@ using EstructurasDeDatos;
 
 namespace MicroSQL
 {
-    class TableElementFactory : IFixedLengthFactory<TableElement>
+    public class TableElementFactory : IFixedLengthFactory<TableElement>
     {
         public TableElement Create(string s)
         {
-            string[] Data = s.Split(Utilities.DataSeparator[0]);
+            string[] Data = s.Split(TableElement.DataSeparator[0]);
             TableElement Output = new TableElement();
+
+            ID id = new ID();
+            id.id = int.Parse(Data[0]);
+            Output.id = id;
+
             for (int i = 0; i < 4; i++)
             {
-                Output.Enteros[i] = int.Parse(Data[i]);
-                Output.VarChars[i] = Data[i + 4];
-                Output.DateTimes[i] = Data[i + 8];
+                Output.Enteros[i+1] = int.Parse(Data[i+1]);
+                Output.VarChars[i+1] = Data[i +1 + 4];
+                Output.DateTimes[i+1] = Data[i + 1 + 8];
             }
             return Output;
         }

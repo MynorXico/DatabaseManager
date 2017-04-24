@@ -13,12 +13,18 @@ namespace MicroSQL
 {
     public class Utilities
     {
-        // Caracter utilizado para separar datos de los elementos de una tabla
-        public static string DataSeparator = "/";
+        // Grado de los árboles a utilizar
+        public static int TreesDegree = 8;
 
+        // Datos utilizados como nulos
+        public static int NullInt = int.MinValue;
+        public static string NullDateTime = "00/00/00/";
+        public static string NullVarChar = "";
 
         // Rutas Predeterminadas
         public static string DefaultPath = @"C:/microSQL/";
+        public static string DefaultTablesFolder = @"tablas/";
+        public static string DefaultTreesFolder = @"arbolesb/";
         public static string DefaultFileName = "microSQL.ini";
 
         // Formato de Variables de Diferentes Tipos de Datos
