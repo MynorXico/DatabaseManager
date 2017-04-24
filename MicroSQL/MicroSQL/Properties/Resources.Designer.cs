@@ -59,15 +59,5 @@ namespace MicroSQL.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Busca un recurso adaptado de tipo System.Byte[].
-        /// </summary>
-        internal static byte[] DataStructures {
-            get {
-                object obj = ResourceManager.GetObject("DataStructures", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
     }
 }

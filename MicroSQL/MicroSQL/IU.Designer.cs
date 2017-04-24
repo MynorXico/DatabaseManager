@@ -1,6 +1,6 @@
 ﻿namespace MicroSQL
 {
-    partial class Form1
+    partial class IU
     {
         /// <summary>
         /// Variable del diseñador necesaria.
@@ -69,7 +69,6 @@
             this.rtbUserInput.TabIndex = 4;
             this.rtbUserInput.Text = "";
             this.rtbUserInput.TextChanged += new System.EventHandler(this.rtbUserInput_TextChanged);
-            this.rtbUserInput.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtbUserInput_KeyPress);
             // 
             // btnEjecutar
             // 

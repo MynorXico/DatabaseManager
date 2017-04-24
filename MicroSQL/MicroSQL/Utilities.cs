@@ -13,64 +13,140 @@ namespace MicroSQL
 {
     public class Utilities
     {
+        // Grado de los árboles a utilizar
+        public static int TreesDegree = 8;
+
+        // Datos utilizados como nulos
+        public static int NullInt = int.MinValue;
+        public static string NullDateTime = "00/00/00/";
+        public static string NullVarChar = "";
+
+        // Rutas Predeterminadas
+        public static string DefaultPath = @"C:/microSQL/";
+        public static string DefaultTablesFolder = @"tablas/";
+        public static string DefaultTreesFolder = @"arbolesb/";
+        public static string DefaultFileName = "microSQL.ini";
+
+        // Formato de Variables de Diferentes Tipos de Datos
+        public static int IntegerSize = 11;
+        public static int VarCharSize = 100;
+        public static int DateTimeSize = 10;
+
         // Definición de colores
         public static Color BackgroundColorColor = ColorTranslator.FromHtml("#272822");
-        public static Color PlaneTextColor = ColorTranslator.FromHtml("#F8F8F2");
+        public static Color PlainTextColor = ColorTranslator.FromHtml("#F8F8F2");
         public static Color DataTypesColor = ColorTranslator.FromHtml("#A6E22E");
         public static Color ReservedWordsColor = ColorTranslator.FromHtml("#66D9EF");
         public static Color QuotedWordsColor = ColorTranslator.FromHtml("#F92672");
 
+        // Diccionarios con palabras reservadas
         public static Dictionary<string, string> DataTypes = new Dictionary<string, string>();
-
-        public static void FillDictionaries()
-        {
-            DataTypes.Add("INT", "INT");
-            DataTypes.Add("VARCHAR", "VARCHAR");
-            DataTypes.Add("DATETIME" , "DATETIME");
-            DataTypes.Add("PRIMARY KEY", "PRIMARY KEY");
-            ReservedWords.Add("SELECT", "SELECT");
-            ReservedWords.Add("FROM", "FROM");
-            ReservedWords.Add("DELETE", "DELETE");
-            ReservedWords.Add("WHERE", "WHERE");
-            ReservedWords.Add("CREATE TABLE", "CREATE TABLE");
-            ReservedWords.Add("DROP TABLE", "DROP TABLE");
-            ReservedWords.Add("INSERT INTO", "INSERT INTO");
-            ReservedWords.Add("VALUES", "VALUES");
-            ReservedWords.Add("GO", "GO");
-            DataTypes.Add("int", "int");
-            DataTypes.Add("varchar", "varchar");
-            DataTypes.Add("datetime", "datetime");
-            DataTypes.Add("primary key", "primary key");
-            ReservedWords.Add("select", "select");
-            ReservedWords.Add("from", "from");
-            ReservedWords.Add("delete", "delete");
-            ReservedWords.Add("where", "where");
-            ReservedWords.Add("create table", "create table");
-            ReservedWords.Add("drop table", "drop table");
-            ReservedWords.Add("insert into", "insert into");
-            ReservedWords.Add("values", "values");
-            ReservedWords.Add("go", "go");
-        }
-
         public static Dictionary<string, string> ReservedWords = new Dictionary<string, string>();
 
-        public static void reconizeCode(string[] sintax)
+        public static bool DictionaryIsLoaded = false;
+
+        /// <summary>
+        /// Llenar diccionarios con los datos existentes en el archivo o en caso de no
+        /// existir, crea uno nuevo.
+        /// </summary>
+        public static void FillDictionaries()
+        {
+            if (File.Exists(DefaultPath + DefaultFileName))
+            {
+                FillDictionaries(DefaultPath + DefaultFileName);
+            }
+            else
+            {
+                List<string> Lines = new List<string>();
+                Lines.Add("SELECT, SELECT");
+                Lines.Add("FROM, FROM");
+                Lines.Add("DELETE, DELETE");
+                Lines.Add("WHERE, WHERE");
+                Lines.Add("CREATE TABLE, CREATE TABLE");
+                Lines.Add("DROP TABLE, DROP TABLE");
+                Lines.Add("INSERT INTO, INSERT INTO");
+                Lines.Add("VALUES, VALUES");
+                Lines.Add("GO, GO");
+
+                if (!Directory.Exists(DefaultPath))
+                {
+                    Directory.CreateDirectory(DefaultPath);
+                }
+                File.WriteAllLines(DefaultPath + DefaultFileName, Lines.ToArray());
+                FillDictionaries(DefaultPath + DefaultFileName);
+            }
+            DataTypes.Add("INT", "INT");
+            DataTypes.Add("VARCHAR", "VARCHAR(");
+            DataTypes.Add("DATETIME", "DATETIME");
+            DataTypes.Add("PRIMARY KEY", "PRIMARY KEY");
+        }
+
+        /// <summary>
+        /// Llenar diccionario tomando los datos de un archivo .ini
+        /// </summary>
+        /// <param name="FilePath"></param>
+        public static void FillDictionaries(string FilePath)
+        {
+            ReservedWords = new Dictionary<string, string>();
+            string[] Lines = FileManagment.OpenFile(FilePath);
+            foreach (string Line in Lines)
+            {
+                string[] SeparatedValues = Line.Split(',');
+                string Key = SeparatedValues[0].Trim(' ');
+                string Value = SeparatedValues[1].Trim(' ');
+                ReservedWords.Add(Key, Value);
+            }
+            if (!Directory.Exists(DefaultPath))
+            {
+                Directory.CreateDirectory(DefaultPath);
+            }
+            File.WriteAllLines(DefaultPath + DefaultFileName, Lines);
+
+            DictionaryIsLoaded = true;
+        }
+
+        public static void RecognizeCode(string[] sintax)
         {
             for (int i = 0; i < ReservedWords.Count; i++)
             {
                 if (ReservedWords.ElementAt(i).Value.Equals(sintax[0]))
                 {
-                    detectCommand(ReservedWords.ElementAt(i).Key.ToUpper().ToString(), sintax);
+                    DetectCommand(ReservedWords.ElementAt(i).Key.ToUpper().ToString(), sintax);
                     break;
                 }
             }
         }
 
-        public static void detectCommand(string command, string [] sintax)
+        /// <summary>
+        /// Da color a la una palabra ingresada.
+        /// </summary>
+        /// <param name="word"> La palabra que será buscada y será formateada.</param>
+        /// <param name="color"> Color con que la palabra será formateada.</param>
+        /// <param name="startIndex"> Índice de la primera posición de búsqueda</param>
+        /// <param name="rt"> RichTextBox que contiene la palabra ingresada.</param>
+        public static void HighLightKeyWord(string word, Color color, int startIndex, RichTextBox rt)
+        {
+            string rtText = rt.Text.ToUpper();
+            if (rtText.Contains(word))
+            {
+                int index = -1;
+                int selectStart = rt.SelectionStart;
+
+                while ((index = rtText.IndexOf(word, (index + 1))) != -1)
+                {
+                    rt.Select((index + startIndex), word.Length);
+                    rt.SelectionColor = color;
+                    rt.Select(selectStart, 0);
+                    rt.SelectionColor = Color.White;
+                }
+            }
+        }
+
+        public static void DetectCommand(string command, string[] sintax)
         {
             if (command.Equals("SELECT"))
             {
-               
+
             }
 
             if (command.Equals("DELETE"))
@@ -95,7 +171,11 @@ namespace MicroSQL
                     bool errorSintaxis = true;
                     bool tableEnd = false;
 
+<<<<<<< HEAD
                     while (count<sintax.Length && !tableEnd)
+=======
+                    while (count < sintax.Length)
+>>>>>>> 37973487dbdc5df14d49e1ae86f9d1326008cfe6
                     {
                         spaces = sintax[count].Split(' ');
                         string comando = "";
@@ -109,7 +189,7 @@ namespace MicroSQL
                             }
                             if (spaces[0].ToUpper().Equals(ReservedWords.ElementAt(8).Key.ToString()))
                             {
-                                MessageBox.Show("GO"); 
+                                MessageBox.Show("GO");
                             }
                         }
                         else
@@ -272,7 +352,7 @@ namespace MicroSQL
 
             }
         }
-        
+       
         public static void UpLoadFile()
         {
             string path = "microsql.ini";
@@ -284,14 +364,14 @@ namespace MicroSQL
                 //Agregar todos los datos del diccionario de Tipos de Dato 
                 for (int i = 0; i < DataTypes.Count; i++)
                 {
-                    lines[i] = DataTypes.ElementAt(i).Key.ToString()+ ","+DataTypes.ElementAt(i).Value.ToString();
+                    lines[i] = DataTypes.ElementAt(i).Key.ToString() + "," + DataTypes.ElementAt(i).Value.ToString();
                     count++;
                 }
 
                 //Agregar todos los datos del diccionario de palabras reservadas
                 for (int i = 0; i < ReservedWords.Count; i++)
                 {
-                    lines[count + i] = ReservedWords.ElementAt(i).Key.ToString()+ "," + ReservedWords.ElementAt(i).Value.ToString();
+                    lines[count + i] = ReservedWords.ElementAt(i).Key.ToString() + "," + ReservedWords.ElementAt(i).Value.ToString();
                 }
                 File.WriteAllLines(path, lines);
             }
@@ -316,14 +396,19 @@ namespace MicroSQL
             }
         }
 
-        public static void HighLightQuoted(RichTextBox rt, Color color)
+        /// <summary>
+        /// Da color a las palabras entre comillas simples.
+        /// </summary>
+        /// <param name="rt">RichTextBox que contiene las palabras entre comillas.</param>
+        /// <param name="color">Color con el que se formateará las palabras entre comillas.</param>
+        public static void HighLightQuotedWords(RichTextBox rt, Color color)
         {
             Regex RegularExpression = new Regex("'(.*)(.*)'");
 
-            MatchCollection Collection = RegularExpression.Matches(rt.Text);
+            MatchCollection Collection = RegularExpression.Matches(rt.Text.ToUpper());
             int OldSelection = rt.SelectionStart;
-            
-            foreach(Match m in Collection)
+
+            foreach (Match m in Collection)
             {
                 rt.SelectionStart = m.Index;
                 rt.SelectionLength = m.Value.Length;
@@ -332,5 +417,50 @@ namespace MicroSQL
             }
             rt.SelectionStart = OldSelection;
         }
+
+        /// <summary>
+        /// Convierte un INT a string con el formato indicado.
+        /// </summary>
+        /// <param name="i"> INT que será formateado.</param>
+        /// <returns> Cadena con el INT formateado.</returns>
+        public static string FormatInteger(int i)
+        {
+            return i.ToString().PadLeft(IntegerSize, '0');
+        }
+
+        /// <summary>
+        /// Convierte un VARCHAR a string con el formato indicado.
+        /// </summary>
+        /// <param name="s"> VARCHAR que será formateado.</param>
+        /// <returns> Cadena con el VARCHAR formateado.</returns>
+        public static string FormatVarChar(string s)
+        {
+            if (s.Length > 100)
+            {
+                throw new FormatException("El tamaño de la variable de tipo de dato VARCHAR no puede ser suprerior a 100.");
+            }
+            return s.PadLeft(IntegerSize, '-');
+        }
+
+        /// <summary>
+        /// Convierte un DATETIME a string con el formato indicado
+        /// </summary>
+        /// <param name="s"> DATETIME que será formateado.</param>
+        /// <returns> Cadena con el VARCHAR formateado.</returns>
+        public static string FormatDate(string s)
+        {
+            StringBuilder Output = new StringBuilder();
+            DateTime Input;
+            if (DateTime.TryParse(s, out Input))
+            {
+                Output.Append(Input.Day);
+                Output.Append("/");
+                Output.Append(Input.Month);
+                Output.Append("/");
+                Output.Append(Input.Year);
+            }
+            return Output.ToString();
+        }
+
     }
 }
