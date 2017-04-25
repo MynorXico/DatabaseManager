@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
+using EstructurasDeDatos;
 
 namespace MicroSQL
 {
@@ -60,7 +61,7 @@ namespace MicroSQL
                 List<string> Lines = new List<string>();
                 Lines.Add("SELECT, SELECT");
                 Lines.Add("FROM, FROM");
-                Lines.Add("DELETE, DELETE");
+                Lines.Add("DELETE FROM, DELETE FROM");
                 Lines.Add("WHERE, WHERE");
                 Lines.Add("CREATE TABLE, CREATE TABLE");
                 Lines.Add("DROP TABLE, DROP TABLE");
@@ -76,7 +77,7 @@ namespace MicroSQL
                 FillDictionaries(DefaultPath + DefaultFileName);
             }
             DataTypes.Add("INT", "INT");
-            DataTypes.Add("VARCHAR", "VARCHAR(");
+            DataTypes.Add("VARCHAR(100)", "VARCHAR(100)");
             DataTypes.Add("DATETIME", "DATETIME");
             DataTypes.Add("PRIMARY KEY", "PRIMARY KEY");
         }
@@ -142,21 +143,150 @@ namespace MicroSQL
             }
         }
 
+        public static void SendToDetectCommand(string [] sintax, int count){
+            string[] newSintax = new string[sintax.Length - (count + 2)];
+            for (int i = 0; i < sintax.Length - (count + 2); i++)
+            {
+                newSintax[i] = sintax[(count + 2) + i];
+            }
+            DetectCommand(newSintax[0], newSintax);
+        }
+
         public static void DetectCommand(string command, string[] sintax)
         {
             if (command.Equals("SELECT"))
             {
-
+                List<string> parameters = new List<string>();
+                string tableName;
+                string parameter;
+                for (int i = 1; i < sintax.Length; i++)
+                {
+                    if (sintax[i].Contains(','))
+                    {
+                        if ((i) < sintax.Length)
+                        {
+                            if (!sintax[i + 1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                            {
+                                parameters.Add(sintax[i].Trim(','));
+                                if ((i+1)<sintax.Length)
+                                {
+                                    if (!sintax[i + 1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                                    {
+                                        MessageBox.Show("Falta pa palabra reservada FROM.");
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        if ((i+2)<sintax.Length)
+                                        {
+                                            //AGREGAR VALIDACION SI LA TABLA EXISTE
+                                            /*
+                                            if(arbol.Buscar(sintax[i+2])){
+                                                TABLA ENCONTRADA
+                                                if ((i+3)<sintax.Length)
+                                                {
+                                                    if(sintax[i+3].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString())){
+                                                        if(i+4 < sintax.Length){
+                                                            //VALIDAR QUE NO SEA UNA PALABRA RESERVADA
+                                                            parameter = sintax[i+4];
+                                                        }else{
+                                                            AGREGAR ERROR
+                                                        }
+                                                    }
+                                                }
+                                            //AGREGAR VALIDACION SI LA TABLA EXISTE
+                                            /*
+                                        }
+                                       */
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("No puede haber una coma antes de la palabra reservada FROM.");
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if ((i)<sintax.Length)
+                        {
+                            if (sintax[i+1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                            {
+                                parameters.Add(sintax[i]);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Hace falta una coma dentro de los parametros, agreguela e intente de nuevo.");
+                                break;
+                            }
+                        }
+                    }
+                }
             }
 
-            if (command.Equals("DELETE"))
+            if (command.Equals("DELETE FROM"))
             {
-
+                string tableName = "";
+                string ID = "";
+                if (sintax.Length>1)
+                {
+                    tableName = sintax[1];
+                }
+                if (sintax.Length>2)
+                {
+                    if (sintax[2].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString()))
+                    {
+                        if (sintax.Length>3)
+                        {
+                            string[] elements = sintax[3].Split(' ');
+                            if (elements.Length == 3)
+                            {
+                                if (elements[1] == "=")
+                                {
+                                    ID = sintax[3];
+                                    //PROCEDER A LA ELIMINACION
+                                    MessageBox.Show("Se eliminara el dato en la tabla: "+tableName+" con ID: "+ID);
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Necesita haber un = en la condicion de eliminacion!");
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("La condicion de eliminacion no cuenta con el formato adecuado!");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //ELIMINAR TODO
+                        MessageBox.Show("Toda la tabla "+tableName+" fue eliminada!");
+                        if (sintax[2].Equals(ReservedWords.ElementAt(8).Value.ToString()))
+                        {
+                            if (sintax.Length>3)
+                            {
+                                string[] newSintax = new string[sintax.Length - 3];
+                                for (int i = 0; i < sintax.Length - (3); i++)
+                                {
+                                    newSintax[i] = sintax[3 + i];
+                                }
+                                DetectCommand(newSintax[0], newSintax);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Toda la tabla " + tableName + " fue eliminada!");
+                }
             }
 
             if (command.Equals("CREATE TABLE"))
             {
-                bool tableCreated = false;
                 string parameterName;
                 string tableName = sintax[1];
                 if (sintax[2] != "(")
@@ -170,12 +300,7 @@ namespace MicroSQL
                     int count = 3;
                     bool errorSintaxis = true;
                     bool tableEnd = false;
-
-<<<<<<< HEAD
-                    while (count<sintax.Length && !tableEnd)
-=======
-                    while (count < sintax.Length)
->>>>>>> 37973487dbdc5df14d49e1ae86f9d1326008cfe6
+                    while (count < sintax.Length && !tableEnd)
                     {
                         spaces = sintax[count].Split(' ');
                         string comando = "";
@@ -186,10 +311,6 @@ namespace MicroSQL
                             if (spaces[0].Equals(")") && !errorSintaxis)
                             {
                                 tableEnd = true;
-                            }
-                            if (spaces[0].ToUpper().Equals(ReservedWords.ElementAt(8).Key.ToString()))
-                            {
-                                MessageBox.Show("GO");
                             }
                         }
                         else
@@ -329,7 +450,19 @@ namespace MicroSQL
                             if (!errorSintaxis && tableEnd)
                             {
                                 MessageBox.Show("Tabla " + tableName + " creada exitosamente!");
-                                tableCreated = true;
+                                
+                                if ((count+1) < sintax.Length)
+                                {
+                                    if (sintax[count + 1].ToUpper().Equals(ReservedWords.ElementAt(8).Value))
+                                    {
+                                        string[] newSintax = new string[sintax.Length - (count + 2)];
+                                        for (int i = 0; i < sintax.Length - (count + 2); i++)
+                                        {
+                                            newSintax[i] = sintax[(count + 2) + i];
+                                        }
+                                        DetectCommand(newSintax[0], newSintax);
+                                    }
+                                }
                             }
                         }
                         count++;
@@ -339,12 +472,155 @@ namespace MicroSQL
 
             if (command.Equals("DROP TABLE"))
             {
-
+                if (sintax.Length>1)
+                {
+                    string tableName = sintax[1];
+                    if (/*VALIDACION SI EXISTE O NO LA TABLA*/true)
+                    {
+                        //ELIMINAR LA TABLA
+                    }
+                    else
+                    {
+                        MessageBox.Show("Nombre de la tabla no existe");
+                    }
+                }
             }
 
             if (command.Equals("INSERT INTO"))
             {
+                string tableName = "";
+                List<string> parameters = new List<string>();
+                List<string> newValues = new List<string>();
+                if (sintax.Length>1)
+                {
+                    tableName = sintax[1];
+                    if (true)//VALIDAR SI EXISTE LA TABLA
+                    {
+                        if (sintax.Length>2)
+                        {
+                            if (sintax[2] != "(")
+                            {
+                                MessageBox.Show("Hace falta un '(' en la sintaxis de: "+command);
+                            }
+                            else
+                            {
+                                for (int i = 3; i < sintax.Length; i++)
+                                {
+                                    if (sintax[i].Contains(','))
+                                    {
+                                        if (sintax[i].Equals(")"))
+                                        {
+                                            MessageBox.Show("No se permiten las comas al final de la instruccion.");
+                                            break;
+                                        }else{
+                                            parameters.Add(sintax[i].Trim(','));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ((i+1)<sintax.Length)
+                                        {
+                                            if (sintax[i + 1].Equals(")"))
+                                            {
+                                                parameters.Add(sintax[i].Trim(','));
+                                                i = sintax.Length;
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show("Deben haber comas entre los parametros!");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (parameters.Count > 0)
+                        {
+                            if (sintax.Length>(parameters.Count+3))
+                            {
+                                if (sintax[parameters.Count + 4].ToUpper().Equals(ReservedWords.ElementAt(7).Value.ToString()))
+                                {
+                                    if (sintax.Length >parameters.Count+4)
+                                    {
+                                        if (!sintax[parameters.Count+5].Equals("("))
+                                        {
+                                            MessageBox.Show("Hace falta un ( en la sintaxis de "+command);
+                                        }
+                                        else
+                                        {
+                                            if (sintax.Length > parameters.Count+5)
+                                            {
+                                                for (int i = parameters.Count + 6; i < sintax.Length; i++)
+                                                {
+                                                    if (sintax[i].Contains(','))
+                                                    {
+                                                        if (sintax[i].Equals(")"))
+                                                        {
+                                                            MessageBox.Show("No se permiten las comas al final de la instruccion.");
+                                                            break;
+                                                        }
+                                                        else
+                                                        {
+                                                            newValues.Add(sintax[i].Trim(','));
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        if ((i + 1) < sintax.Length)
+                                                        {
+                                                            if (sintax[i + 1].Equals(")"))
+                                                            {
+                                                                newValues.Add(sintax[i].Trim(','));
+                                                                i = sintax.Length;
+                                                            }
+                                                            else
+                                                            {
+                                                                MessageBox.Show("Deben haber comas entre los parametros!");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            if (parameters.Count==newValues.Count)
+                                            {
+                                                MessageBox.Show("Datos correctamente agregados a la tabla: "+tableName);
+                                                //Agregar valores al arbol
+                                                if (sintax.Length>(parameters.Count+newValues.Count+6))
+                                                {
+                                                    if (sintax[parameters.Count + newValues.Count + 7].Equals(ReservedWords.ElementAt(8).Value.ToString()))
+                                                    {
+                                                        if (sintax.Length > (parameters.Count + newValues.Count + 7))
+                                                        {
 
+                                                        }
+                                                        string[] newSintax = new string[sintax.Length - (parameters.Count + newValues.Count + 8)];
+                                                        for (int i = 0; i < sintax.Length - (parameters.Count + newValues.Count + 8); i++)
+                                                        {
+                                                            newSintax[i] = sintax[(parameters.Count + newValues.Count + 8) + i];
+                                                        }
+                                                        DetectCommand(newSintax[0], newSintax);
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                MessageBox.Show("Los parametros y los nuevos valores no coinciden, reviselos y vuelva a intentar!");
+                                            }
+                                        }
+                                    }
+                                }
+                            } 
+                        }
+                    }
+                    else
+                    {
+                        //MOSTRAR MENSAJE QUE LA TABLA NO EXISTE
+                    }
+                }
+                else
+                {
+
+                }
             }
 
             if (command.Equals("GO"))
@@ -378,19 +654,15 @@ namespace MicroSQL
             else
             {
                 string[] lines = File.ReadAllLines(path);
-                for (int i = 0; i < 8; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     string[] words = lines[i].Split(',');
                     DataTypes.Add(words[0], words[1]);
                 }
 
-                for (int i = 8; i < 26; i++)
+                for (int i = 4; i < 13; i++)
                 {
                     string[] words = lines[i].Split(',');
-                    if (i == 25)
-                    {
-                        Console.WriteLine();
-                    }
                     ReservedWords.Add(words[0], words[1]);
                 }
             }
