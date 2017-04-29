@@ -4,12 +4,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EstructurasDeDatos;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MicroSQL
 {
     public class TableManagment
     {
+
+        public static bool FileExists(string path)
+        {
+            return File.Exists(path);
+        }
+
+        public static void CreateTree(List<string> listaVarchar, List<string> listaDateTime, List<string> listaInt, string primaryKey, string tableName, string TreePath)
+        {
+            BTree<TableElement, ID> NewTree = new BTree<TableElement, ID>(Utilities.TreesDegree, TreePath, new TableElementFactory(), new IDFactory());
+
+
+            for (int i = 0; i < listaVarchar.Count; i++)
+            {
+
+            }
+            for (int i = 0; i < listaDateTime.Count; i++)
+            {
+
+            }
+            for (int i = 0; i < listaInt.Count; i++)
+            {
+
+            }
+        }
+
+        public static void CreateTable(List<string> listaVarchar, List<string> listaDateTime, List<string> listaInt, string primaryKey, string tableName)
+        {
+            string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree";
+
+            if (FileExists(TreePath))
+            {
+                MessageBox.Show("La tabla "+tableName+" ya existe en el contexto actual.");
+            }
+            else
+            {
+                if (!Directory.Exists(Utilities.DefaultPath+Utilities.DefaultTreesFolder))
+                {
+                    Directory.CreateDirectory(Utilities.DefaultPath + Utilities.DefaultTreesFolder);
+                }
+                CreateTree(listaVarchar, listaDateTime, listaInt, primaryKey, tableName, TreePath);
+                MessageBox.Show("Tabla " + tableName + " creada correctamente!");
+            }
+        }
+
         public static void Select(DataGridView dgv,  string[] ColumnsNameSelection, string TableName)
         {
             ResetDataGridView(dgv);

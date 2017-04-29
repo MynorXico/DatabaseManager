@@ -17,6 +17,10 @@ namespace MicroSQL
         public string[] VarChars = new string[4];
         public string[] DateTimes = new string[4];
 
+        public string[] EnterosColumnName;
+        public string[] VarCharsColumnName;
+        public string[] DateTimesColumnName;
+
         /// <summary>
         /// Constuctor de TableElement nulo.
         /// </summary>

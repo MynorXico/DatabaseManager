@@ -44,7 +44,8 @@ namespace EstructurasDeDatos
                     Elements.Add(nodoActual.Values[i]);
                 }
             }
-        }
+        }
+
 
         public int RootPointer
         {
@@ -216,6 +217,7 @@ namespace EstructurasDeDatos
             FileName = FilePath;
             TFactory = ContentFactory;
             TKeyFactory = KeyFactory;
+            
             File = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite,
            FileShare.Read);
             RootPointer = FileManagment.ReadLine(File, 0);
