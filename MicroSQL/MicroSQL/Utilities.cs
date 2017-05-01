@@ -151,12 +151,17 @@ namespace MicroSQL
         }
 
         public static void SendToDetectCommand(string [] sintax, int count){
-            string[] newSintax = new string[sintax.Length - (count + 2)];
-            for (int i = 0; i < sintax.Length - (count + 2); i++)
+            string[] newSintax = new string[sintax.Length - count];
+            for (int i = 0; i < sintax.Length - count; i++)
             {
-                newSintax[i] = sintax[(count + 2) + i];
+                newSintax[i] = sintax[count + i];
             }
             DetectCommand(newSintax[0], newSintax);
+        }
+
+        public static bool IsGO(string command)
+        {
+            return command.ToUpper().Equals(ReservedWords.ElementAt(8).Value.ToString());
         }
 
         public static void DetectCommand(string command, string[] sintax)
@@ -165,79 +170,118 @@ namespace MicroSQL
             {
                 List<string> parameters = new List<string>();
                 string tableName;
+                string ID;
                 string parameter;
-                for (int i = 1; i < sintax.Length; i++)
+                if (sintax.Length>1)
                 {
-                    if (sintax[i].Contains(','))
+                    if (sintax[1].Equals("*"))
                     {
-                        if ((i) < sintax.Length)
+                        if (sintax.Length > 2)
                         {
-                            if (!sintax[i + 1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                            if (sintax[2].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
                             {
-                                parameters.Add(sintax[i].Trim(','));
-                                if ((i+1)<sintax.Length)
+                                if (sintax.Length>3)
                                 {
-                                    if (!sintax[i + 1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                                    tableName = sintax[3];
+                                    if (!TableExists(tableName))
                                     {
-                                        MessageBox.Show("Falta pa palabra reservada FROM.");
-                                        break;
+                                        MessageBox.Show("La tabla "+tableName+" no existe! Sentencia: "+command);
                                     }
                                     else
                                     {
-                                        if ((i+2)<sintax.Length)
+                                        MessageBox.Show("Se seleccionaron todos los datos de la tabla: "+tableName);
+                                        if (sintax.Length>4)
                                         {
-                                            if (true) //tableName exists
+                                            if (IsGO(sintax[4]))
                                             {
-                                                if (true)
-                                                {
-
-                                                }
+                                                SendToDetectCommand(sintax, 5);
                                             }
-                                            //AGREGAR VALIDACION SI LA TABLA EXISTE
-                                            /*
-                                            if(arbol.Buscar(sintax[i+2])){
-                                                TABLA ENCONTRADA
-                                                if ((i+3)<sintax.Length)
-                                                {
-                                                    if(sintax[i+3].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString())){
-                                                        if(i+4 < sintax.Length){
-                                                            //VALIDAR QUE NO SEA UNA PALABRA RESERVADA
-                                                            parameter = sintax[i+4];
-                                                        }else{
-                                                            AGREGAR ERROR
-                                                        }
-                                                    }
-                                                }
-                                            //AGREGAR VALIDACION SI LA TABLA EXISTE
-                                            /*
-                                        }
-                                       */
                                         }
                                     }
                                 }
-                            }
-                            else
-                            {
-                                MessageBox.Show("No puede haber una coma antes de la palabra reservada FROM.");
-                                break;
                             }
                         }
                     }
                     else
                     {
-                        if ((i)<sintax.Length)
+                        for (int i = 1; i < sintax.Length; i++)
                         {
-                            if (sintax[i+1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                            
+                            string[] spaces = sintax[i].Split(' ');
+                            if (spaces.Length == 1)
                             {
-                                parameters.Add(sintax[i]);
+                                if (spaces[0].Contains(","))
+                                {
+                                    parameters.Add(spaces[0].Trim(','));
+                                }
+                                else
+                                {
+                                    if (i+1 < sintax.Length)
+                                    {
+                                        if (sintax[i+1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                                        {
+                                            parameters.Add(sintax[i]);
+                                            if (i+2<sintax.Length)
+                                            {
+                                                tableName = sintax[i + 2];
+                                                if (!TableExists(tableName))
+                                                {
+                                                    MessageBox.Show("Ta tabla " + tableName + " no existe! Sentencia: " + command);
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    if (i+3<sintax.Length)
+                                                    {
+                                                        if (sintax[i + 3].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString()))
+                                                        {
+                                                            if (i+4 < sintax.Length)
+                                                            {
+                                                                string[] idConditional = sintax[i + 4].Split(' ');
+                                                                if (idConditional.Length == 3)
+                                                                {
+                                                                    parameter = idConditional[0];
+                                                                    if (idConditional[1].Equals("="))
+                                                                    {
+                                                                        ID = idConditional[2];
+                                                                        MessageBox.Show("Se seleccionaron varios datos de la tabla: "+tableName+" con ID: "+ID);
+                                                                        if (sintax.Length > parameters.Count+5)
+                                                                        {
+                                                                            if (IsGO(sintax[parameters.Count+5]))
+                                                                            {
+                                                                                i = sintax.Length;
+                                                                                SendToDetectCommand(sintax, 6+parameters.Count);
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        MessageBox.Show("Error en la condicional, hace falta el signo = , sentencia: " + command);
+                                                                        break;
+                                                                    }
+                                                                }
+                                                                else
+                                                                {
+                                                                    MessageBox.Show("Error en la condicional, sentencia: "+command);
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            MessageBox.Show("Hace falta la palabra reservada FROM, o hace falta alguna , en los parametros de busqueda! Sentencia: "+command);
+                                            break;
+                                        }
+                                    }
+                                }
                             }
-                            else
-                            {
-                                MessageBox.Show("Hace falta una coma dentro de los parametros, agreguela e intente de nuevo.");
-                                break;
-                            }
+                            
                         }
-                    }
+                    }                
                 }
             }
 
@@ -248,7 +292,7 @@ namespace MicroSQL
                 if (sintax.Length>1)
                 {
                     tableName = sintax[1];
-                    if (File.Exists(Utilities.DefaultPath+Utilities.DefaultTreesFolder+tableName+".btree"))
+                    if (TableExists(tableName))
                     {
                         if (sintax.Length > 2)
                         {
@@ -480,9 +524,10 @@ namespace MicroSQL
                 if (sintax.Length>1)
                 {
                     string tableName = sintax[1];
-                    if (File.Exists(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree"))
+                    if (TableExists(tableName))
                     {
                         File.Delete(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree");
+                        MessageBox.Show("La tabla " + tableName + " fue eliminada exitosamente!");
                     }
                     else
                     {
@@ -499,7 +544,7 @@ namespace MicroSQL
                 if (sintax.Length>1)
                 {
                     tableName = sintax[1];
-                    if (File.Exists(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree"))
+                    if (TableExists(tableName))
                     {
                         if (sintax.Length>2)
                         {
@@ -541,7 +586,7 @@ namespace MicroSQL
                         }
                         if (parameters.Count > 0)
                         {
-                            if (sintax.Length>(parameters.Count+3))
+                            if (sintax.Length>(parameters.Count+4))
                             {
                                 if (sintax[parameters.Count + 4].ToUpper().Equals(ReservedWords.ElementAt(7).Value.ToString()))
                                 {
@@ -632,6 +677,11 @@ namespace MicroSQL
             {
 
             }
+        }
+
+        public static bool TableExists(string tableName)
+        {
+            return File.Exists(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree");
         }
        
         public static bool DatatypeExists(string command)
