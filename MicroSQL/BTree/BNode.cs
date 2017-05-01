@@ -578,8 +578,8 @@ namespace EstructurasDeDatos
                     Keys[j - 1] = Keys[j];
                     Values[j - 1] = Values[j];
                 }
-                Keys[N - 1] = KeyFactory.CreateNull();
                 Values[N - 1] = ContentFactory.CreateNull();
+                Keys[N - 1] = KeyFactory.CreateNull();
             }
             DiskWrite(File, 65);
         }

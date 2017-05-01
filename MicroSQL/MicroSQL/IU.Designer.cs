@@ -149,6 +149,7 @@
             this.Controls.Add(this.rtbUserInput);
             this.Controls.Add(this.tvTables);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "IU";
             this.Text = "Data Base Manager";
