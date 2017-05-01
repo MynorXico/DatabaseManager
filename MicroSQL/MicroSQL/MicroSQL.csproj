@@ -33,9 +33,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EstructurasDeDatos">
-      <HintPath>..\..\BTree\src\BTree\EstructurasDeDatos.DLL</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -94,7 +91,19 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
+    <None Include="Resources\Variable-96.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BTree\BTree.csproj">
+      <Project>{3f502596-1587-4880-b2a3-15a61a7c973e}</Project>
+      <Name>BTree</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Select Table-96.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Type-96.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,9 +1,7 @@
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\MicroSQL.exe.config
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\MicroSQL.exe
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\MicroSQL.pdb
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\DataStructures.DLL
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.csprojResolveAssemblyReference.cache
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.Form1.resources
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.Properties.Resources.resources
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.csproj.GenerateResource.Cache
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.exe
@@ -18,3 +16,6 @@ C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.pdb
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.IU.resources
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\EstructurasDeDatos.DLL
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.IU.resources
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.dll
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.pdb
