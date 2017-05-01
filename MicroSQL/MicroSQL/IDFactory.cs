@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EstructurasDeDatos;
+﻿using EstructurasDeDatos;
 
 namespace MicroSQL
 {
@@ -12,7 +7,7 @@ namespace MicroSQL
         public ID Create(string s)
         {
             ID id = new ID();
-            id.id = int.Parse(s);
+            id.id = int.Parse(s.Trim('\''));
             return id;
         }
 

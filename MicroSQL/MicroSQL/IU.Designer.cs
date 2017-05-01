@@ -28,8 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IU));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.tvTables = new System.Windows.Forms.TreeView();
+            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.rtbUserInput = new System.Windows.Forms.RichTextBox();
             this.btnEjecutar = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -54,10 +57,21 @@
             // 
             // tvTables
             // 
+            this.tvTables.ImageIndex = 0;
+            this.tvTables.ImageList = this.imageList1;
             this.tvTables.Location = new System.Drawing.Point(21, 46);
             this.tvTables.Name = "tvTables";
-            this.tvTables.Size = new System.Drawing.Size(239, 478);
+            this.tvTables.SelectedImageIndex = 0;
+            this.tvTables.Size = new System.Drawing.Size(239, 531);
             this.tvTables.TabIndex = 3;
+            // 
+            // imageList1
+            // 
+            this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
+            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
+            this.imageList1.Images.SetKeyName(0, "Select Table-96.png");
+            this.imageList1.Images.SetKeyName(1, "Variable-96[1].png");
+            this.imageList1.Images.SetKeyName(2, "Type-96[1].png");
             // 
             // rtbUserInput
             // 
@@ -65,14 +79,14 @@
             this.rtbUserInput.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbUserInput.Location = new System.Drawing.Point(275, 47);
             this.rtbUserInput.Name = "rtbUserInput";
-            this.rtbUserInput.Size = new System.Drawing.Size(302, 254);
+            this.rtbUserInput.Size = new System.Drawing.Size(302, 307);
             this.rtbUserInput.TabIndex = 4;
             this.rtbUserInput.Text = "";
             this.rtbUserInput.TextChanged += new System.EventHandler(this.rtbUserInput_TextChanged);
             // 
             // btnEjecutar
             // 
-            this.btnEjecutar.Location = new System.Drawing.Point(390, 307);
+            this.btnEjecutar.Location = new System.Drawing.Point(390, 360);
             this.btnEjecutar.Name = "btnEjecutar";
             this.btnEjecutar.Size = new System.Drawing.Size(75, 23);
             this.btnEjecutar.TabIndex = 5;
@@ -83,7 +97,7 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(271, 336);
+            this.tabControl1.Location = new System.Drawing.Point(275, 389);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(302, 188);
@@ -106,7 +120,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(608, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(610, 24);
             this.menuStrip1.TabIndex = 7;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -125,18 +139,19 @@
             this.loadToolStripMenuItem.Text = "Load dictionary";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
-            // Form1
+            // IU
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(608, 536);
+            this.ClientSize = new System.Drawing.Size(610, 589);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnEjecutar);
             this.Controls.Add(this.rtbUserInput);
             this.Controls.Add(this.tvTables);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Name = "Form1";
+            this.Name = "IU";
             this.Text = "Data Base Manager";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.tabControl1.ResumeLayout(false);
@@ -158,6 +173,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ImageList imageList1;
     }
 }
 

@@ -27,6 +27,8 @@ namespace MicroSQL
         public static string DefaultTablesFolder = @"tablas/";
         public static string DefaultTreesFolder = @"arbolesb/";
         public static string DefaultFileName = "microSQL.ini";
+        public static string CompleteDefaultTablesFolder = DefaultPath + DefaultTablesFolder;
+        public static string CompleteDefaultTreesFolder = DefaultPath + DefaultTreesFolder;
 
         // Formato de Variables de Diferentes Tipos de Datos
         public static int IntegerSize = 11;
@@ -50,7 +52,7 @@ namespace MicroSQL
         /// Llenar diccionarios con los datos existentes en el archivo o en caso de no
         /// existir, crea uno nuevo.
         /// </summary>
-        public static void FillDictionaries()
+        public static void Initialize()
         {
             if (File.Exists(DefaultPath + DefaultFileName))
             {
@@ -307,6 +309,11 @@ namespace MicroSQL
                                         {
                                             ID = sintax[3];
                                             //PROCEDER A LA ELIMINACION
+                                            #region Se elimina de árbol
+                                            ID id = new MicroSQL.ID();
+                                            id.id = int.Parse(Regex.Replace(ID, @"[^\d]", ""));
+                                            TableManagment.Delete(id, tableName);
+                                            #endregion
                                             MessageBox.Show("Se eliminara el dato en la tabla: " + tableName + " con ID: " + ID);
                                             if (sintax.Length>4)
                                             {
@@ -343,6 +350,8 @@ namespace MicroSQL
                             }
                             else
                             {
+                                TableManagment.Delete(tableName);
+
                                 //ELIMINAR TODO
                                 MessageBox.Show("Toda la tabla " + tableName + " fue eliminada!");
                                 if (sintax[2].Equals(ReservedWords.ElementAt(8).Value.ToString()))
@@ -361,6 +370,7 @@ namespace MicroSQL
                         }
                         else
                         {
+                            TableManagment.Delete(tableName);
                             MessageBox.Show("Toda la tabla " + tableName + " fue eliminada!");
                         }
                     }
@@ -378,7 +388,8 @@ namespace MicroSQL
                 List<string> listaInt = new List<string>();
                 List<string> listaVarchar = new List<string>();
                 List<string> listaDateTime = new List<string>();
-
+                List<string> Parametros = new List<string>();
+                List<string> Tipos = new List<string>();
                 if (sintax.Length>1)
                 {
                     tableName = sintax[1];
@@ -404,14 +415,20 @@ namespace MicroSQL
                                                 if (spaces[1].Trim(',').ToUpper().Equals("INT"))
                                                 {
                                                     listaInt.Add(spaces[0]);
+                                                    Tipos.Add("INT");
+                                                    Parametros.Add(spaces[0]);
                                                 }
                                                 if (spaces[1].Trim(',').ToUpper().Equals("VARCHAR(100)"))
                                                 {
                                                     listaVarchar.Add(spaces[0]);
+                                                    Tipos.Add("VARCHAR");
+                                                    Parametros.Add(spaces[0]);
                                                 }
                                                 if (spaces[1].Trim(',').ToUpper().Equals("DATETIME"))
                                                 {
                                                     listaDateTime.Add(spaces[0]);
+                                                    Tipos.Add("DATETIME");
+                                                    Parametros.Add(spaces[0]);
                                                 }
                                             }
                                         }
@@ -424,14 +441,20 @@ namespace MicroSQL
                                                     if (spaces[1].ToUpper().Equals("INT"))
                                                     {
                                                         listaInt.Add(spaces[0]);
+                                                        Tipos.Add("INT");
+                                                        Parametros.Add(spaces[0]);
                                                     }
                                                     if (spaces[1].ToUpper().Equals("VARCHAR(100)"))
                                                     {
                                                         listaVarchar.Add(spaces[0]);
+                                                        Tipos.Add("VARCHAR");
+                                                        Parametros.Add(spaces[0]);
                                                     }
                                                     if (spaces[1].ToUpper().Equals("DATETIME"))
                                                     {
                                                         listaDateTime.Add(spaces[0]);
+                                                        Tipos.Add("DATETIME");
+                                                        Parametros.Add(spaces[0]);
                                                     }
                                                     if (primaryKey == "")
                                                     {
@@ -439,7 +462,8 @@ namespace MicroSQL
                                                     }
                                                     else
                                                     {
-                                                        TableManagment.CreateTable(listaVarchar,listaDateTime,listaInt,primaryKey,tableName);
+                                                        // SE CREA LA TABLA
+                                                        TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName);
                                                         if (sintax.Length > listaDateTime.Count+listaInt.Count+listaVarchar.Count+1+4)
                                                         {
                                                             int count = listaDateTime.Count + listaInt.Count + listaVarchar.Count + 1 + 4;
@@ -521,17 +545,21 @@ namespace MicroSQL
 
             if (command.Equals("DROP TABLE"))
             {
-                if (sintax.Length>1)
+                if (sintax.Length > 1)
                 {
                     string tableName = sintax[1];
                     if (TableExists(tableName))
                     {
                         File.Delete(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree");
+<<<<<<< HEAD
                         MessageBox.Show("La tabla " + tableName + " fue eliminada exitosamente!");
+=======
+                        File.Delete(Utilities.DefaultPath + Utilities.DefaultTablesFolder + tableName + ".table");
+>>>>>>> cb84aa599d472312139d6d5ad9ce0411ae3684d2
                     }
                     else
                     {
-                        MessageBox.Show("La tabla "+tableName+" no existe, no puede ser eliminada!");
+                        MessageBox.Show("La tabla " + tableName + " no existe, no puede ser eliminada!");
                     }
                 }
             }
@@ -635,6 +663,7 @@ namespace MicroSQL
                                             {
                                                 MessageBox.Show("Datos correctamente agregados a la tabla: "+tableName);
                                                 //Agregar valores al arbol
+                                                TableManagment.Insert(newValues, tableName, parameters);
                                                 if (sintax.Length>(parameters.Count+newValues.Count+7))
                                                 {
                                                     if (sintax[parameters.Count + newValues.Count + 7].Equals(ReservedWords.ElementAt(8).Value.ToString()))
@@ -701,7 +730,7 @@ namespace MicroSQL
             string path = "microsql.ini";
             if (!File.Exists(path))
             {
-                FillDictionaries();
+                Initialize();
                 string[] lines = new string[DataTypes.Count + ReservedWords.Count];
                 int count = 0;
                 //Agregar todos los datos del diccionario de Tipos de Dato 

@@ -18,10 +18,10 @@ namespace MicroSQL
             id.id = int.Parse(Data[0]);
             Output.id = id;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Output.Enteros[i+1] = int.Parse(Data[i+1]);
-                Output.VarChars[i+1] = Data[i +1 + 4];
+                Output.VarChars[i+1] = Data[i + 1 + 4];
                 Output.DateTimes[i+1] = Data[i + 1 + 8];
             }
             return Output;

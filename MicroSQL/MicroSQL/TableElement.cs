@@ -9,7 +9,7 @@ namespace MicroSQL
 {
     public class TableElement : IFixedLength, IAutoFormattable
     {
-        public ID id;
+        public ID id = new ID();
 
         public static string DataSeparator = "/";
 
@@ -26,6 +26,7 @@ namespace MicroSQL
         /// </summary>
         public TableElement()
         {
+            id.id = Utilities.NullInt;
             for (int i = 0; i < Enteros.Length; i++)
             {
                 Enteros[i] = Utilities.NullInt;
@@ -46,9 +47,10 @@ namespace MicroSQL
             get
             {
                 int Sum = 0;
-                Sum += 4 * Utilities.IntegerSize;
-                Sum += 4 * Utilities.VarCharSize;
-                Sum += 4 * Utilities.DateTimeSize;
+                Sum += 1 * Utilities.IntegerSize + 1;   // ID (+1 separador)
+                Sum += 4 * Utilities.IntegerSize + 1;       // 4 Enteros
+                Sum += 4 * Utilities.VarCharSize + 1;       // 4 VarChars
+                Sum += 4 * Utilities.DateTimeSize + 2;      // 4 DateTimes
 
                 return Sum;
             }
@@ -61,9 +63,8 @@ namespace MicroSQL
         // IAutoFormattable
         public string Format()
         {
-
             StringBuilder Output = new StringBuilder();
-            Output.Append(id);
+            Output.Append(Utilities.FormatInteger(id.id));
             Output.Append(DataSeparator);
             for (int i = 0; i < 4; i++)
             {

@@ -17,7 +17,8 @@ namespace MicroSQL
         public IU()
         {
             InitializeComponent();
-            Utilities.FillDictionaries();
+            Utilities.Initialize();
+            TableManagment.FillTreeeView(tvTables, Utilities.CompleteDefaultTreesFolder, Utilities.CompleteDefaultTablesFolder);
         }
 
         private void rtbUserInput_TextChanged(object sender, EventArgs e)
@@ -52,6 +53,7 @@ namespace MicroSQL
         {
             string[] SIntax = rtbUserInput.Lines;
             Utilities.RecognizeCode(SIntax);
+            TableManagment.FillTreeeView(tvTables, Utilities.CompleteDefaultTreesFolder, Utilities.CompleteDefaultTablesFolder);
         }
     }
 }
