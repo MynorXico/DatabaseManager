@@ -9,6 +9,8 @@ using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
 using EstructurasDeDatos;
+using System.Threading;
+using System.Globalization;
 
 namespace MicroSQL
 {
@@ -19,7 +21,7 @@ namespace MicroSQL
 
         // Datos utilizados como nulos
         public static int NullInt = int.MinValue;
-        public static string NullDateTime = "00/00/00/";
+        public static string NullDateTime = "00-00-00";
         public static string NullVarChar = "";
 
         // Rutas Predeterminadas
@@ -551,11 +553,11 @@ namespace MicroSQL
                     if (TableExists(tableName))
                     {
                         File.Delete(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree");
-<<<<<<< HEAD
+
                         MessageBox.Show("La tabla " + tableName + " fue eliminada exitosamente!");
-=======
+
                         File.Delete(Utilities.DefaultPath + Utilities.DefaultTablesFolder + tableName + ".table");
->>>>>>> cb84aa599d472312139d6d5ad9ce0411ae3684d2
+
                     }
                     else
                     {
@@ -661,9 +663,9 @@ namespace MicroSQL
                                             }
                                             if (parameters.Count==newValues.Count)
                                             {
-                                                MessageBox.Show("Datos correctamente agregados a la tabla: "+tableName);
                                                 //Agregar valores al arbol
                                                 TableManagment.Insert(newValues, tableName, parameters);
+                                                MessageBox.Show("Datos correctamente agregados a la tabla: " + tableName);
                                                 if (sintax.Length>(parameters.Count+newValues.Count+7))
                                                 {
                                                     if (sintax[parameters.Count + newValues.Count + 7].Equals(ReservedWords.ElementAt(8).Value.ToString()))
@@ -817,17 +819,27 @@ namespace MicroSQL
         /// <returns> Cadena con el VARCHAR formateado.</returns>
         public static string FormatDate(string s)
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("ar-BH");
+
             StringBuilder Output = new StringBuilder();
             DateTime Input;
-            if (DateTime.TryParse(s, out Input))
+            if (DateTime.TryParse(s.Trim('\''), out Input))
             {
-                Output.Append(Input.Day);
-                Output.Append("/");
-                Output.Append(Input.Month);
-                Output.Append("/");
-                Output.Append(Input.Year);
+                Output.Append(Input.Day.ToString().PadLeft(2, '0'));
+                Output.Append("-");
+                Output.Append(Input.Month.ToString().PadLeft(2, '0'));
+                Output.Append("-");
+                Output.Append(Input.Year.ToString().Substring(2));
+            }
+            else
+            {
+                if (s.Trim('\'') == NullDateTime)
+                    Output.Append(NullDateTime);
+                else
+                    throw new FormatException("Verificar el formato de fecha.");
             }
             return Output.ToString();
+
         }
 
     }

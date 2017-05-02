@@ -14,13 +14,13 @@ namespace MicroSQL
         public static void FillTreeeView(TreeView tv, string TreesFolder, string TablesFolder)
         {
             tv.Nodes.Clear();
-            if (!(Directory.Exists(TreesFolder) || Directory.Exists(TablesFolder)))
+            if (!Directory.Exists(TreesFolder) || !Directory.Exists(TablesFolder))
                 return; 
 
             List<string> TreesName = Directory.EnumerateFiles(TreesFolder).ToArray().ToList();
             List<string> TablesName = Directory.EnumerateFiles(TablesFolder).ToArray().ToList();
 
-            foreach(string TreeName in TreesName)
+           foreach(string TreeName in TreesName)
             {
                 string tag = TreeName.Split('/')[3].Split('.')[0];
                 TreeNode TmpNode = new TreeNode(tag, 0, 0);

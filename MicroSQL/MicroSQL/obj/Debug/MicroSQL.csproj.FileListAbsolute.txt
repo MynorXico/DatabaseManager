@@ -15,7 +15,8 @@ C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.exe
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.pdb
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.IU.resources
-C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\EstructurasDeDatos.DLL
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.IU.resources
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.dll
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.pdb
+C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.dll
+C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.pdb
