@@ -133,6 +133,7 @@ namespace EstructurasDeDatos
             this.Parent = Parent;
             this.KeyFactory = KeyFactory;
             this.ContentFactory = ContentFactory;
+            this.t = (Degree / 2) - 1;
             Clear(ContentFactory, KeyFactory);
         }
 
@@ -227,7 +228,7 @@ namespace EstructurasDeDatos
         }
 
 
-        public void Split(TKey Key, T Value, int RightSibling, BNode<T, TKey> NewNode, ref TKey UpwardMovingKey, T UpwardMovingValue)
+        public void Split(TKey Key, T Value, int RightSibling, BNode<T, TKey> NewNode, ref TKey UpwardMovingKey, ref T UpwardMovingValue)
         {
             Keys.Add(KeyFactory.CreateNull());
             Values.Add(Value);
@@ -260,6 +261,7 @@ namespace EstructurasDeDatos
             if (Leaf)
             {
                 DeleteFromLeaf(Stream, Key);
+                // DiskWrite(Stream, 65);
             }
             else
             {
@@ -285,10 +287,10 @@ namespace EstructurasDeDatos
 
         private void EnsureFullEnough(FileStream File, int i)
         {
-            BNode<T, TKey> Children = DiskRead(File, Degree, ChildrenPointers[i], ContentFactory, KeyFactory);
-            if (Children.N < t)
+            BNode<T, TKey> Child = DiskRead(File, Degree, ChildrenPointers[i], ContentFactory, KeyFactory);
+            if (Child.N < t)
             {
-                BNode<T, TKey> LeftSibling = DiskRead(File, Degree, ChildrenPointers[i - 1], ContentFactory, KeyFactory);
+                BNode<T, TKey> LeftSibling;
                 int LeftSiblingN;
 
                 if (i > 0)
@@ -303,31 +305,33 @@ namespace EstructurasDeDatos
                 }
                 if (LeftSiblingN >= t)
                 {
-                    for (int j = Children.N - 1; j >= 0; j--)
+                    for (int j = Child.N - 1; j >= 0; j--)
                     {
-                        Children.Keys[j + 1] = Children.Keys[j];
-                        Children.Values[j + 1] = Children.Values[j];
+                        Child.Values[j + 1] = Child.Values[j];
+                        Child.Keys[j + 1] = Child.Keys[j];
                     }
-                    if (!Children.Leaf)
+                    if (!Child.Leaf)
                     {
-                        for (int j = Children.N; j >= 0; j--)
+                        for (int j = Child.N; j >= 0; j--)
                         {
-                            Children.ChildrenPointers[j + 1] = Children.ChildrenPointers[j];
+                            Child.ChildrenPointers[j + 1] = Child.ChildrenPointers[j];
                         }
                     }
-                    Children.Keys[0] = Keys[i - 1];
-                    Children.Values[0] = Children.Values[i - 1];
-                    Keys[i - 1] = LeftSibling.Keys[LeftSiblingN - 1];
+                    Child.Values[0] = Child.Values[i - 1];
+                    Child.Keys[0] = Keys[i - 1];
+
                     Values[i - 1] = LeftSibling.Values[LeftSiblingN - 1];
-                    LeftSibling.Keys[LeftSiblingN - 1] = KeyFactory.CreateNull();
+                    Keys[i - 1] = LeftSibling.Keys[LeftSiblingN - 1];
+
                     LeftSibling.Values[LeftSiblingN - 1] = ContentFactory.CreateNull();
-                    if (!Children.Leaf)
+                    LeftSibling.Keys[LeftSiblingN - 1] = KeyFactory.CreateNull();
+                    if (!Child.Leaf)
                     {
-                        Children.ChildrenPointers[0] = LeftSibling.ChildrenPointers[LeftSiblingN];
+                        Child.ChildrenPointers[0] = LeftSibling.ChildrenPointers[LeftSiblingN];
                         LeftSibling.ChildrenPointers[LeftSiblingN] = SizesNSpecialCharacters.NullPointer;
                     }
                     DiskWrite(File, 65);
-                    Children.DiskWrite(File, 65);
+                    Child.DiskWrite(File, 65);
                     LeftSibling.DiskWrite(File, 65);
                 }
                 else
@@ -348,23 +352,23 @@ namespace EstructurasDeDatos
 
                     if (RightSiblingN >= t)
                     {
-                        Children.Keys[Children.N] = Keys[i];
-                        Children.Values[Children.N] = Values[i];
-                        Keys[i] = RightSibling.Keys[0];
+                        Child.Values[Child.N] = Values[i];
+                        Child.Keys[Child.N] = Keys[i];
                         Values[i] = RightSibling.Values[0];
+                        Keys[i] = RightSibling.Keys[0];
 
-                        if (!Children.Leaf)
+                        if (!Child.Leaf)
                         {
-                            Children.ChildrenPointers[Children.N] = RightSibling.ChildrenPointers[0];
+                            Child.ChildrenPointers[Child.N] = RightSibling.ChildrenPointers[0];
                         }
 
                         for (int j = 1; j < RightSiblingN; j++)
                         {
+                            RightSibling.Values[j - 1] = RightSibling.Values[j];
                             RightSibling.Keys[j - 1] = RightSibling.Keys[j];
-                            RightSibling.Values[j - 1] = RightSibling.Values[j - 1];
                         }
-                        RightSibling.Keys[RightSiblingN - 1] = KeyFactory.CreateNull();
                         RightSibling.Values[RightSiblingN - 1] = ContentFactory.CreateNull();
+                        RightSibling.Keys[RightSiblingN - 1] = KeyFactory.CreateNull();
                         if (!RightSibling.Leaf)
                         {
                             for (int j = 1; j <= RightSiblingN; j++)
@@ -374,90 +378,94 @@ namespace EstructurasDeDatos
                             RightSibling.ChildrenPointers[RightSiblingN] = SizesNSpecialCharacters.NullPointer;
                         }
                         DiskWrite(File, 65);
-                        Children.DiskWrite(File, 65);
+                        Child.DiskWrite(File, 65);
                         RightSibling.DiskWrite(File, 65);
                     }
                     else
                     {
                         if (LeftSiblingN > 0)
                         {
-                            for (int j = Children.N - 1; j >= 0; j--)
+                            for (int j = Child.N - 1; j >= 0; j--)
                             {
-                                Children.Keys[j + t] = Children.Keys[j];
-                                Children.Values[j + t] = Children.Values[j];
+                                Child.Values[j + t] = Child.Values[j];
+                                Child.Keys[j + t] = Child.Keys[j];
                             }
-                            if (!Children.Leaf)
+                            if (!Child.Leaf)
                             {
-                                for (int j = Children.N; j >= 0; j--)
+                                for (int j = Child.N; j >= 0; j--)
                                 {
-                                    Children.ChildrenPointers[j + t] = Children.ChildrenPointers[j];
+                                    Child.ChildrenPointers[j + t] = Child.ChildrenPointers[j];
                                 }
                             }
                             for (int j = 0; j < LeftSiblingN; j++)
                             {
-                                Children.Keys[j] = LeftSibling.Keys[j];
-                                Children.Values[j] = LeftSibling.Values[j];
-                                LeftSibling.Keys[j] = KeyFactory.CreateNull();
+                                Child.Values[j] = LeftSibling.Values[j];
+                                Child.Keys[j] = LeftSibling.Keys[j];
                                 LeftSibling.Values[j] = ContentFactory.CreateNull();
+                                LeftSibling.Keys[j] = KeyFactory.CreateNull();
                             }
-                            if (!Children.Leaf)
+                            if (!Child.Leaf)
                             {
-                                for (int j = 0; j < LeftSiblingN; j++)
+                                for (int j = 0; j <= LeftSiblingN; j++)
                                 {
-                                    Children.ChildrenPointers[j] = LeftSibling.ChildrenPointers[j];
+                                    Child.ChildrenPointers[j] = LeftSibling.ChildrenPointers[j];
                                     LeftSibling.ChildrenPointers[j] = SizesNSpecialCharacters.NullPointer;
                                 }
                             }
 
-                            Children.Keys[t-1] = Keys[i - 1];
-                            Children.Values[t-1] = Values[i - 1];
+                            Child.Values[t - 1] = Values[i - 1];
+                            Child.Keys[t-1] = Keys[i - 1];
 
                             for (int j = i; j < N; j++)
                             {
+                                Values[j - 1] = Values[j];
                                 Keys[j - 1] = Keys[j];
                                 ChildrenPointers[j - 1] = ChildrenPointers[j];
                             }
                             ChildrenPointers[N - 1] = ChildrenPointers[N];
-                            Keys[N - 1] = KeyFactory.CreateNull();
+
+                            Values[N - 1] = ContentFactory.CreateNull();
                             ChildrenPointers[N] = SizesNSpecialCharacters.NullPointer;
+                            Keys[N - 1] = KeyFactory.CreateNull();
+
                             LeftSibling.DiskWrite(File, 65);
                             DiskWrite(File, 65);
-                            Children.DiskWrite(File, 65);
+                            Child.DiskWrite(File, 65);
                         }
                         else
                         {
                             for (int j = 0; j < RightSiblingN; j++)
                             {
-                                Children.Keys[j + Children.N + 1] = RightSibling.Keys[j];
-                                Children.Values[j + Children.N + 1] = RightSibling.Values[j];
-                                RightSibling.Keys[j] = KeyFactory.CreateNull();
+                                Child.Values[j + Child.N + 1] = RightSibling.Values[j];
+                                Child.Keys[j + Child.N + 1] = RightSibling.Keys[j];
                                 RightSibling.Values[j] = ContentFactory.CreateNull();
+                                RightSibling.Keys[j] = KeyFactory.CreateNull();
                             }
-                            if (!Children.Leaf)
+                            if (!Child.Leaf)
                             {
                                 for (int j = 0; j <= RightSiblingN; j++)
                                 {
-                                    Children.ChildrenPointers[j + Children.N + 1] = RightSibling.ChildrenPointers[j];
+                                    Child.ChildrenPointers[j + Child.N + 1] = RightSibling.ChildrenPointers[j];
                                     RightSibling.ChildrenPointers[j] = SizesNSpecialCharacters.NullPointer;
                                 }
                             }
 
-                            Children.Keys[t - 1] = Keys[i];
-                            Children.Values[t - 1] = Values[i];
+                            Child.Values[t - 1] = Values[i];
+                            Child.Keys[t - 1] = Keys[i];
                           for (int j = i + 1; j < N; j++)
                             {
-                                Keys[j - 1] = Keys[j];
                                 Values[j - 1] = Values[j];
+                                Keys[j - 1] = Keys[j];
                                 ChildrenPointers[j] = ChildrenPointers[j + 1];
 
                             }
-                            Keys[N - 1] = KeyFactory.CreateNull();
                             Values[N - 1] = ContentFactory.CreateNull();
                             ChildrenPointers[N] = SizesNSpecialCharacters.NullPointer;
+                            Keys[N - 1] = KeyFactory.CreateNull();
 
                             RightSibling.DiskWrite(File, 65);
                             DiskWrite(File, 65);
-                            Children.DiskWrite(File, 65);
+                            Child.DiskWrite(File, 65);
                         }
                     }
                 }
@@ -475,8 +483,8 @@ namespace EstructurasDeDatos
                 T PrimeValue;
                 TKey KPrime = y.LeftGreatest(File, out PrimeValue);
                 y.Delete(File, KPrime);
-                Keys[i] = KPrime;
                 Values[i] = PrimeValue;
+                Keys[i] = KPrime;
                 
 
             }
@@ -489,37 +497,36 @@ namespace EstructurasDeDatos
                     T PrimeValue;
                     TKey KPrime = z.RightLowest(File, out PrimeValue);
                     z.Delete(File, KPrime);
-                    Keys[i] = KPrime;
                     Values[i] = PrimeValue;
+                    Keys[i] = KPrime;
                 }
                 else
                 {
-                    y.Keys[y.N] = Key;
                     y.Values[y.N] = Value;
+                    y.Keys[y.N] = Key;
                     for (int j = 0; j < z.N; j++)
                     {
-                        y.Keys[y.N + j + 1] = z.Keys[j];
                         y.Values[y.N + j + 1] = z.Values[j];
-                       
+                        y.Keys[y.N + j + 1] = z.Keys[j];                       
                     }
                     if (!y.Leaf)
                     {
                         for (int j = 0; j <= z.N; j++)
                         {
-                            y.Keys[y.N + j + 1] = z.Keys[j];
                             y.Values[y.N + j + 1] = z.Values[j];
+                            y.Keys[y.N + j + 1] = z.Keys[j];
                         }
                     }
 
                     for (int j = i + 1; j < N; j++)
                     {
-                        Keys[j - 1] = Keys[j];
                         Values[j - 1] = Values[j];
+                        Keys[j - 1] = Keys[j];
                         ChildrenPointers[j] = ChildrenPointers[j + 1];
                     }
-                    Keys[N - 1] = KeyFactory.CreateNull();
-                    Values[N - 1] = ContentFactory.CreateNull();
                     ChildrenPointers[N] = SizesNSpecialCharacters.NullPointer;
+                    Values[N - 1] = ContentFactory.CreateNull();
+                    Keys[N - 1] = KeyFactory.CreateNull();
 
                     DiskWrite(File, 65);
                     y.DiskWrite(File, 65);
@@ -527,9 +534,6 @@ namespace EstructurasDeDatos
                     y.Delete(File, Key);
                 }
             }
-
-            DiskWrite(File, 65);
-
         }
 
         private TKey RightLowest(FileStream File, out T Value)
@@ -537,8 +541,8 @@ namespace EstructurasDeDatos
             
             if (Leaf)
             {
-                TKey output = Keys[0];
                 Value = Values[0];
+                TKey output = Keys[0];
                 return output;
             }
             else
@@ -552,8 +556,8 @@ namespace EstructurasDeDatos
             TKey Output;
             if (Leaf)
             {
-                Output = Keys[N - 1];
                 Value = Values[N - 1];
+                Output = Keys[N - 1];
                 return Output;
             }
             else
@@ -575,8 +579,8 @@ namespace EstructurasDeDatos
             {
                 for (int j = i + 1; j < N; j++)
                 {
-                    Keys[j - 1] = Keys[j];
                     Values[j - 1] = Values[j];
+                    Keys[j - 1] = Keys[j];
                 }
                 Values[N - 1] = ContentFactory.CreateNull();
                 Keys[N - 1] = KeyFactory.CreateNull();

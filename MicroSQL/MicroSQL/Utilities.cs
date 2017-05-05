@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Collections;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
 using System.Text.RegularExpressions;
-using EstructurasDeDatos;
 using System.Threading;
 using System.Globalization;
 
@@ -17,7 +14,7 @@ namespace MicroSQL
     public class Utilities
     {
         // Grado de los árboles a utilizar
-        public static int TreesDegree = 8;
+        public static int TreesDegree = 6;
 
         // Datos utilizados como nulos
         public static int NullInt = int.MinValue;
@@ -110,7 +107,7 @@ namespace MicroSQL
             DictionaryIsLoaded = true;
         }
 
-        public static void RecognizeCode(string[] sintax)
+        public static void RecognizeCode(string[] sintax, DataGridView Grid)
         {
             if (sintax.Length>1)
             {
@@ -118,7 +115,7 @@ namespace MicroSQL
                 {
                     if (ReservedWords.ElementAt(i).Value.Equals(sintax[0]))
                     {
-                        DetectCommand(ReservedWords.ElementAt(i).Key.ToUpper().ToString(), sintax);
+                        DetectCommand(ReservedWords.ElementAt(i).Key.ToUpper().ToString(), sintax, Grid);
                         break;
                     }
                 }
@@ -154,13 +151,13 @@ namespace MicroSQL
             }
         }
 
-        public static void SendToDetectCommand(string [] sintax, int count){
+        public static void SendToDetectCommand(string [] sintax, int count, DataGridView Grid){
             string[] newSintax = new string[sintax.Length - count];
             for (int i = 0; i < sintax.Length - count; i++)
             {
                 newSintax[i] = sintax[count + i];
             }
-            DetectCommand(newSintax[0], newSintax);
+            DetectCommand(newSintax[0], newSintax, Grid);
         }
 
         public static bool IsGO(string command)
@@ -168,7 +165,7 @@ namespace MicroSQL
             return command.ToUpper().Equals(ReservedWords.ElementAt(8).Value.ToString());
         }
 
-        public static void DetectCommand(string command, string[] sintax)
+        public static void DetectCommand(string command, string[] sintax, DataGridView Grid)
         {
             if (command.Equals("SELECT"))
             {
@@ -189,16 +186,20 @@ namespace MicroSQL
                                     tableName = sintax[3];
                                     if (!TableExists(tableName))
                                     {
-                                        MessageBox.Show("La tabla "+tableName+" no existe! Sentencia: "+command);
+                                        MessageBox.Show("La tabla "+tableName+" no existe! Sentencia: "+ ReservedWords[command]);
                                     }
                                     else
                                     {
                                         MessageBox.Show("Se seleccionaron todos los datos de la tabla: "+tableName);
+                                        TableManagment.SelectAllFields(Grid, tableName);
+
+
+
                                         if (sintax.Length>4)
                                         {
                                             if (IsGO(sintax[4]))
                                             {
-                                                SendToDetectCommand(sintax, 5);
+                                                SendToDetectCommand(sintax, 5, Grid);
                                             }
                                         }
                                     }
@@ -214,7 +215,7 @@ namespace MicroSQL
                             string[] spaces = sintax[i].Split(' ');
                             if (spaces.Length == 1)
                             {
-                                if (spaces[0].Contains(","))
+                                if (spaces[0].EndsWith(","))
                                 {
                                     parameters.Add(spaces[0].Trim(','));
                                 }
@@ -230,7 +231,7 @@ namespace MicroSQL
                                                 tableName = sintax[i + 2];
                                                 if (!TableExists(tableName))
                                                 {
-                                                    MessageBox.Show("Ta tabla " + tableName + " no existe! Sentencia: " + command);
+                                                    MessageBox.Show("Ta tabla " + tableName + " no existe! Sentencia: " + ReservedWords[command]);
                                                     break;
                                                 }
                                                 else
@@ -249,35 +250,51 @@ namespace MicroSQL
                                                                     {
                                                                         ID = idConditional[2];
                                                                         MessageBox.Show("Se seleccionaron varios datos de la tabla: "+tableName+" con ID: "+ID);
+
+                                                                        #region Selección de Datos
+                                                                        TableManagment.Select(Grid, parameters.ToArray(), tableName, int.Parse(ID));
+
+                                                                        #endregion
+
                                                                         if (sintax.Length > parameters.Count+5)
                                                                         {
                                                                             if (IsGO(sintax[parameters.Count+5]))
                                                                             {
                                                                                 i = sintax.Length;
-                                                                                SendToDetectCommand(sintax, 6+parameters.Count);
+                                                                                SendToDetectCommand(sintax, 6+parameters.Count, Grid);
                                                                             }
                                                                         }
                                                                     }
                                                                     else
                                                                     {
-                                                                        MessageBox.Show("Error en la condicional, hace falta el signo = , sentencia: " + command);
+                                                                        MessageBox.Show("Error en la condicional, hace falta el signo = , sentencia: " + ReservedWords[command]);
                                                                         break;
                                                                     }
                                                                 }
                                                                 else
                                                                 {
-                                                                    MessageBox.Show("Error en la condicional, sentencia: "+command);
+                                                                    MessageBox.Show("Error en la condicional, sentencia: "+ReservedWords[command]);
                                                                     break;
                                                                 }
                                                             }
                                                         }
+                                                        else
+                                                        {
+                                                            i = sintax.Length;
+                                                            TableManagment.Select(Grid, parameters.ToArray(), tableName);
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        i = sintax.Length;
+                                                        TableManagment.Select(Grid, parameters.ToArray(), tableName);
                                                     }
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            MessageBox.Show("Hace falta la palabra reservada FROM, o hace falta alguna , en los parametros de busqueda! Sentencia: "+command);
+                                            MessageBox.Show($"Hace falta la palabra reservada {ReservedWords["FROM"]}, o hace falta alguna , en los parametros de busqueda! Sentencia: "+ ReservedWords[command]);
                                             break;
                                         }
                                     }
@@ -328,12 +345,12 @@ namespace MicroSQL
                                                         {
                                                             newSintax[i] = sintax[5 + i];
                                                         }
-                                                        DetectCommand(newSintax[0], newSintax);
+                                                        DetectCommand(newSintax[0], newSintax, Grid);
                                                     }
                                                     else
                                                     {
                                                         string [] newSintax2 = { "" };
-                                                        DetectCommand("", newSintax2);
+                                                        DetectCommand("", newSintax2, Grid);
                                                     }
                                                 }
                                             }
@@ -365,7 +382,7 @@ namespace MicroSQL
                                         {
                                             newSintax[i] = sintax[3 + i];
                                         }
-                                        DetectCommand(newSintax[0], newSintax);
+                                        DetectCommand(newSintax[0], newSintax, Grid);
                                     }
                                 }
                             }
@@ -465,7 +482,11 @@ namespace MicroSQL
                                                     else
                                                     {
                                                         // SE CREA LA TABLA
-                                                        TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName);
+                                                        if (ValidateTypeArrayLength(listaInt, listaVarchar, listaDateTime))
+                                                            TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName);
+                                                        else
+                                                            MessageBox.Show("No se permite tener más de 3 elementos por tipo de dato.");
+                                                        
                                                         if (sintax.Length > listaDateTime.Count+listaInt.Count+listaVarchar.Count+1+4)
                                                         {
                                                             int count = listaDateTime.Count + listaInt.Count + listaVarchar.Count + 1 + 4;
@@ -481,7 +502,7 @@ namespace MicroSQL
                                                                             newSintax[j] = sintax[count+ 1 + j];
                                                                         }
                                                                         i = sintax.Length;
-                                                                        DetectCommand(newSintax[0], newSintax);
+                                                                        DetectCommand(newSintax[0], newSintax, Grid);
                                                                     }
                                                                 }
                                                             }
@@ -662,10 +683,10 @@ namespace MicroSQL
                                                 }
                                             }
                                             if (parameters.Count==newValues.Count)
-                                            {
-                                                //Agregar valores al arbol
-                                                TableManagment.Insert(newValues, tableName, parameters);
-                                                MessageBox.Show("Datos correctamente agregados a la tabla: " + tableName);
+                                            {                     
+                                                if (TableManagment.Insert(newValues, tableName, parameters))
+                                                    MessageBox.Show("Datos correctamente agregados a la tabla: " + tableName);
+
                                                 if (sintax.Length>(parameters.Count+newValues.Count+7))
                                                 {
                                                     if (sintax[parameters.Count + newValues.Count + 7].Equals(ReservedWords.ElementAt(8).Value.ToString()))
@@ -679,7 +700,7 @@ namespace MicroSQL
                                                         {
                                                             newSintax[i] = sintax[(parameters.Count + newValues.Count + 8) + i];
                                                         }
-                                                        DetectCommand(newSintax[0], newSintax);
+                                                        DetectCommand(newSintax[0], newSintax, Grid);
                                                     }
                                                 }
                                             }
@@ -841,6 +862,14 @@ namespace MicroSQL
             return Output.ToString();
 
         }
+
+        private static bool ValidateTypeArrayLength(List<string> IntegerArray, List<string> VarCharArray, List<string> DateTimeArray)
+        {
+            if (IntegerArray.Count < 4 && VarCharArray.Count < 4 && DateTimeArray.Count < 4)
+                return true;
+            return false;
+        }
+
 
     }
 }

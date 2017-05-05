@@ -13,9 +13,9 @@ namespace MicroSQL
 
         public static string DataSeparator = "/";
 
-        public int[] Enteros = new int[4];
-        public string[] VarChars = new string[4];
-        public string[] DateTimes = new string[4];
+        public int[] Enteros = new int[3];
+        public string[] VarChars = new string[3];
+        public string[] DateTimes = new string[3];
 
         public string[] EnterosColumnName;
         public string[] VarCharsColumnName;
@@ -48,9 +48,9 @@ namespace MicroSQL
             {
                 int Sum = 0;
                 Sum += 1 * Utilities.IntegerSize + 1;   // ID (+1 separador)
-                Sum += 4 * Utilities.IntegerSize + 1;       // 4 Enteros
-                Sum += 4 * Utilities.VarCharSize + 1;       // 4 VarChars
-                Sum += 4 * Utilities.DateTimeSize + 2;      // 4 DateTimes
+                Sum += 3 * Utilities.IntegerSize + 1;       // 4 Enteros
+                Sum += 3 * Utilities.VarCharSize + 1;       // 4 VarChars
+                Sum += 3 * Utilities.DateTimeSize + 2;      // 4 DateTimes
 
                 return Sum;
             }
@@ -66,17 +66,17 @@ namespace MicroSQL
             StringBuilder Output = new StringBuilder();
             Output.Append(Utilities.FormatInteger(id.id));
             Output.Append(DataSeparator);
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Output.Append(Utilities.FormatInteger(Enteros[i]));
                 Output.Append(DataSeparator);
             }
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Output.Append(Utilities.FormatVarChar(VarChars[i]));
                 Output.Append(DataSeparator);
             }
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 3; i++)
             {
                 Output.Append(Utilities.FormatDate(DateTimes[i]));
                 Output.Append(DataSeparator);

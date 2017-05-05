@@ -40,6 +40,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnExport = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -52,7 +54,7 @@
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(288, 156);
+            this.dataGridView1.Size = new System.Drawing.Size(499, 453);
             this.dataGridView1.TabIndex = 2;
             // 
             // tvTables
@@ -62,7 +64,7 @@
             this.tvTables.Location = new System.Drawing.Point(21, 46);
             this.tvTables.Name = "tvTables";
             this.tvTables.SelectedImageIndex = 0;
-            this.tvTables.Size = new System.Drawing.Size(239, 531);
+            this.tvTables.Size = new System.Drawing.Size(239, 486);
             this.tvTables.TabIndex = 3;
             // 
             // imageList1
@@ -79,14 +81,14 @@
             this.rtbUserInput.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.rtbUserInput.Location = new System.Drawing.Point(275, 47);
             this.rtbUserInput.Name = "rtbUserInput";
-            this.rtbUserInput.Size = new System.Drawing.Size(302, 307);
+            this.rtbUserInput.Size = new System.Drawing.Size(302, 485);
             this.rtbUserInput.TabIndex = 4;
             this.rtbUserInput.Text = "";
             this.rtbUserInput.TextChanged += new System.EventHandler(this.rtbUserInput_TextChanged);
             // 
             // btnEjecutar
             // 
-            this.btnEjecutar.Location = new System.Drawing.Point(390, 360);
+            this.btnEjecutar.Location = new System.Drawing.Point(374, 554);
             this.btnEjecutar.Name = "btnEjecutar";
             this.btnEjecutar.Size = new System.Drawing.Size(75, 23);
             this.btnEjecutar.TabIndex = 5;
@@ -97,10 +99,10 @@
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(275, 389);
+            this.tabControl1.Location = new System.Drawing.Point(615, 47);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(302, 188);
+            this.tabControl1.Size = new System.Drawing.Size(513, 485);
             this.tabControl1.TabIndex = 6;
             // 
             // tabPage2
@@ -109,7 +111,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(294, 162);
+            this.tabPage2.Size = new System.Drawing.Size(505, 459);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Results";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -120,7 +122,7 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(610, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1140, 24);
             this.menuStrip1.TabIndex = 7;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -139,11 +141,33 @@
             this.loadToolStripMenuItem.Text = "Load dictionary";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
+            // btnExport
+            // 
+            this.btnExport.Location = new System.Drawing.Point(642, 538);
+            this.btnExport.Name = "btnExport";
+            this.btnExport.Size = new System.Drawing.Size(86, 23);
+            this.btnExport.TabIndex = 8;
+            this.btnExport.Text = "Exportar *.csv";
+            this.btnExport.UseVisualStyleBackColor = true;
+            this.btnExport.Click += new System.EventHandler(this.btnExport_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(734, 538);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(86, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Exportar *.xls";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // IU
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(610, 589);
+            this.ClientSize = new System.Drawing.Size(1140, 589);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnExport);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btnEjecutar);
             this.Controls.Add(this.rtbUserInput);
@@ -174,6 +198,8 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ImageList imageList1;
+        private System.Windows.Forms.Button btnExport;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -20,9 +20,9 @@ namespace MicroSQL
 
             for (int i = 0; i < 3; i++)
             {
-                Output.Enteros[i+1] = int.Parse(Data[i+1]);
-                Output.VarChars[i+1] = Data[i + 1 + 4];
-                Output.DateTimes[i+1] = Data[i + 1 + 8];
+                Output.Enteros[i] = int.Parse(Data[i+1]);
+                Output.VarChars[i] = Data[i + 4];
+                Output.DateTimes[i] = Data[i + 7];
             }
             return Output;
         }

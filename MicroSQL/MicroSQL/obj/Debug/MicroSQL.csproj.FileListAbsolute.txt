@@ -20,3 +20,4 @@ C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTr
 C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.pdb
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.dll
 C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\MicroSQL\bin\Debug\BTree.pdb
+C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\MicroSQL\obj\Debug\MicroSQL.csproj.ResolveComReference.cache
