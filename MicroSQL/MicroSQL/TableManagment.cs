@@ -54,7 +54,7 @@ namespace MicroSQL
 
         }
 
-        public static void CreateTable(List<string> Tipos, List<string> Parametros, string primaryKey, string tableName)
+        public static void CreateTable(List<string> Tipos, List<string> Parametros, string primaryID, string tableName)
         {
             string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree";
             string TablePath = Utilities.DefaultPath + Utilities.DefaultTablesFolder + tableName + ".table";
@@ -73,8 +73,8 @@ namespace MicroSQL
                 StringBuilder ColumnNames = new StringBuilder();
                 StringBuilder ColumnTypes = new StringBuilder();
 
-                ColumnNames.Append("KEY,");
-                ColumnTypes.Append("KEY,");
+                ColumnNames.Append("ID,");
+                ColumnTypes.Append("ID,");
 
                 foreach (string Parametro in Parametros)
                 {
@@ -114,23 +114,48 @@ namespace MicroSQL
         {
             ResetDataGridView(dgv);
             BTree<TableElement, ID> BTree = new BTree<TableElement, ID>(Utilities.TreesDegree,
-                (Utilities.DefaultPath + Utilities.DefaultTreesFolder + TableName + ".arbolb"),
+                (Utilities.DefaultPath + Utilities.DefaultTreesFolder + TableName + ".btree"),
                 new TableElementFactory(), new IDFactory());
 
             string[] LineasArchivo = FileManagment.OpenFile(Utilities.DefaultPath +
-                Utilities.DefaultTablesFolder + ".tabla");
-            string[] NombresColumna = LineasArchivo[0].Split(',');
-            string[] TiposColumna = LineasArchivo[1].Split(',');
+                Utilities.DefaultTablesFolder + TableName + ".table");
+            string[] TiposColumna = LineasArchivo[0].Split(',');
+            string[] NombresColumna = LineasArchivo[1].Split(',');
 
-            List<object> ColumnsTitle = new List<object>();
+            List<string> ColumnsTitle = new List<string>();
+            List<string> DataTypeSelection = new List<string>();
+
+            bool continuar = true;
+            List<string> ListaErrores = new List<string>();
+            for (int i = 0; i < ColumnsNameSelection.Length; i++)
+            {
+                if (!NombresColumna.Contains(ColumnsNameSelection[i]))
+                {
+                    ListaErrores.Add(ColumnsNameSelection[i]);
+                    continuar = false;
+                }
+            }
+            if (!continuar)
+            {
+                StringBuilder s = new StringBuilder();
+                s.Append("Los siguientes campos no existen en la tabla:\n");
+                foreach (String error in ListaErrores)
+                {
+                    s.Append("\t"+error);
+                    s.Append("\n");
+                }
+                MessageBox.Show(s.ToString());
+                return;
+            }
+
 
             // Genera Nombres de Columnas
-            for (int i = 0; i < NombresColumna.Length; i++)
+            for (int i = 0; i < NombresColumna.Length-1; i++)
             {
-
                 if (ColumnsNameSelection.Contains(NombresColumna[i]))
                 {
                     ColumnsTitle.Add(NombresColumna[i]);
+                    DataTypeSelection.Add(TiposColumna[i]);
                 }
             }
             // Crea las columnas para Data Grid View
@@ -140,57 +165,93 @@ namespace MicroSQL
             }
 
             // Crea una fila por cada elemento
-            foreach (TableElement Element in BTree.GetElements())
+            List<TableElement> Elements = BTree.GetElements();
+            foreach (TableElement Element in Elements)
             {
                 List<object> Row = new List<object>();
                 int Integers = 0;
                 int VarChars = 0;
                 int DateTimes = 0;
-                for (int i = 0; i < TiposColumna.Length; i++)
+                for (int i = 0; i < DataTypeSelection.Count; i++)
                 {
-                    if (TiposColumna[i] == "INT")
+                    if(DataTypeSelection[i] == "ID")
+                    {
+                        Row.Add(Element.id.id.ToString());
+                    }
+                    if (DataTypeSelection[i] == "INT")
                     {
                         Row.Add(Element.Enteros[Integers++]);
                     }
-                    else if (TiposColumna[i] == "VARCHAR")
+                    else if (DataTypeSelection[i] == "VARCHAR")
                     {
-                        Row.Add(Element.VarChars[VarChars++]);
+                        Row.Add(Element.VarChars[VarChars++].Trim('\'').Trim('-'));
                     }
-                    else if (TiposColumna[i] == "DATETIME")
+                    else if (DataTypeSelection[i] == "DATETIME")
                     {
                         Row.Add(Element.DateTimes[DateTimes++]);
                     }
                 }
-                dgv.Rows.Add(Row);
+                dgv.Rows.Add(Row.ToArray());
             }
 
+        }
+
+        public static void SelectAllFields(DataGridView dgv, string TableName)
+        {
+            string[] LineasArchivo = FileManagment.OpenFile(Utilities.DefaultPath +
+                Utilities.DefaultTablesFolder + TableName + ".table");
+            string[] TiposColumna = LineasArchivo[0].Split(',');
+            string[] NombresColumna = LineasArchivo[1].Split(',');
+            Select(dgv, NombresColumna, TableName);
         }
 
         public static void Select(DataGridView dgv, string[] ColumnsNameSelection, string TableName, int Id)
         {
             ResetDataGridView(dgv);
             BTree<TableElement, ID> BTree = new BTree<TableElement, ID>(Utilities.TreesDegree,
-                (Utilities.DefaultPath + Utilities.DefaultTreesFolder + TableName + ".arbolb"),
+                (Utilities.DefaultPath + Utilities.DefaultTreesFolder + TableName + ".btree"),
                 new TableElementFactory(), new IDFactory());
 
             string[] LineasArchivo = FileManagment.OpenFile(Utilities.DefaultPath +
-                Utilities.DefaultTablesFolder + ".tabla");
-            string[] NombresColumna = LineasArchivo[0].Split(',');
-            string[] TiposColumna = LineasArchivo[1].Split(',');
+                Utilities.DefaultTablesFolder + TableName + ".table");
+            string[] TiposColumna = LineasArchivo[0].Split(',');
+            string[] NombresColumna = LineasArchivo[1].Split(',');
 
-            ID Query = new ID();
-            Query.id = Id;
-            TableElement Element = BTree.GetValue(Query);
+            List<string> ColumnsTitle = new List<string>();
+            List<string> DataTypeSelection = new List<string>();
 
-            List<object> ColumnsTitle = new List<object>();
+            bool continuar = true;
+            List<string> ListaErrores = new List<string>();
+            for(int i = 0; i < ColumnsNameSelection.Length; i++)
+            {
+                if (!NombresColumna.Contains(ColumnsNameSelection[i]))
+                {
+                    ListaErrores.Add(ColumnsNameSelection[i]);
+                    continuar = false;
+                }
+            }
+            if (!continuar)
+            {
+                StringBuilder s = new StringBuilder();
+                s.Append("Los siguientes elementos no existen:\n");
+                MessageBox.Show("Los siguientes elementos no existen: ");
+                foreach(String error in ListaErrores)
+                {
+                    s.Append(error);
+                    s.Append("\n");
+                }
+                MessageBox.Show(s.ToString());
+                return;
+            }
+
 
             // Genera Nombres de Columnas
             for (int i = 0; i < NombresColumna.Length; i++)
             {
-
                 if (ColumnsNameSelection.Contains(NombresColumna[i]))
                 {
                     ColumnsTitle.Add(NombresColumna[i]);
+                    DataTypeSelection.Add(TiposColumna[i]);
                 }
             }
             // Crea las columnas para Data Grid View
@@ -199,51 +260,50 @@ namespace MicroSQL
                 dgv.Columns.Add(Name, Name);
             }
 
+            ID Query = new ID();
+            Query.id = Id;
             // Crea una fila por cada elemento
+            TableElement Element = BTree.GetValue(Query);
             List<object> Row = new List<object>();
             int Integers = 0;
             int VarChars = 0;
             int DateTimes = 0;
-            for (int i = 0; i < TiposColumna.Length; i++)
+            for (int i = 0; i < DataTypeSelection.Count; i++)
             {
-                if (TiposColumna[i] == "INT")
+                if (DataTypeSelection[i] == "ID")
+                {
+                    Row.Add(Element.id.id.ToString());
+                }
+                if (DataTypeSelection[i] == "INT")
                 {
                     Row.Add(Element.Enteros[Integers++]);
                 }
-                else if (TiposColumna[i] == "VARCHAR")
+                else if (DataTypeSelection[i] == "VARCHAR")
                 {
-                    Row.Add(Element.VarChars[VarChars++]);
+                    Row.Add(Element.VarChars[VarChars++].Trim('\'').Trim('-'));
                 }
-                else if (TiposColumna[i] == "DATETIME")
+                else if (DataTypeSelection[i] == "DATETIME")
                 {
                     Row.Add(Element.DateTimes[DateTimes++]);
                 }
             }
-            dgv.Rows.Add(Row);
-
+                dgv.Rows.Add(Row.ToArray());
 
         }
 
         private static void ResetDataGridView(DataGridView rt)
         {
-            foreach (DataGridViewColumn column in rt.Columns)
-            {
-                rt.Columns.Remove(column);
-            }
-            foreach (DataGridViewRow row in rt.Rows)
-            {
-                rt.Rows.Remove(row);
-            }
+            rt.Columns.Clear();
         }
 
-        public static void Insert(List<string> Insersion, string TreeName, List<string> Parameters)
+        public static bool Insert(List<string> Insersion, string TreeName, List<string> Parameters)
         {
             string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + TreeName + ".btree";
 
             if (!File.Exists(TreePath))
             {
                 MessageBox.Show("No existe la tabla a la cual se desea insertar");
-                return;
+                return false;
             }
 
             TableElement NewElement = new TableElement();
@@ -261,24 +321,70 @@ namespace MicroSQL
             {
                 if (DataTypes[i] == "INT")
                 {
-                    NewElement.Enteros[IntegerCounter++] = int.Parse(Insersion[i]);
+                    int Test;
+                    if (int.TryParse(Insersion[i], out Test))
+                    {
+                        NewElement.Enteros[IntegerCounter++] = int.Parse(Insersion[i]);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Se esperaba un entero y se recibió {Insersion[i]}");
+                        return false;
+                    }
                 }
                 else if (DataTypes[i] == "VARCHAR")
                 {
-                    NewElement.VarChars[VarCharCounter++] = Insersion[i];
+                    if (Insersion[i].StartsWith("'") && Insersion[i].EndsWith(""))
+                        NewElement.VarChars[VarCharCounter++] = Insersion[i];
+                    else
+                    {
+                        MessageBox.Show("Las variables VARCHAR deben estar encerradas con comillas simples");
+                        return false;
+                    }
                 }
                 else if (DataTypes[i] == "DATETIME")
                 {
-                    NewElement.DateTimes[DateTimeCounter++] = Insersion[i];
+                    if (Insersion[i].StartsWith("'") && Insersion[i].EndsWith(""))
+                        NewElement.DateTimes[VarCharCounter++] = Insersion[i];
+                    else
+                    {
+                        MessageBox.Show("Las variables DATETIME deben estar encerradas con comillas simples");
+                        return false;
+                    }
+
+                    DateTime Date;
+                    if(DateTime.TryParse(Insersion[i].Trim('\''), out Date))
+                    {
+                        NewElement.DateTimes[DateTimeCounter++] = Insersion[i];
+                    }else
+                    {
+                        MessageBox.Show("Por favor proporcionar la fecha en un formato válido.");
+                        return false;
+                    }
                 }
-                else if (DataTypes[i] == "KEY")
+                else if (DataTypes[i] == "ID")
                 {
-                    id.id = int.Parse(Insersion[i]);
-                    NewElement.id = id;
+                    int Test;
+                    if (int.TryParse(Insersion[i], out Test))
+                    {
+                        NewElement.id.id = int.Parse(Insersion[i]);
+                        id.id = int.Parse(Insersion[i]);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Se esperaba un entero y se recibió {Insersion[i]}");
+                        return false;
+                    }
                 }
             }
             BTree<TableElement, ID> BTree = new BTree<TableElement, ID>(Utilities.TreesDegree, TreePath, new TableElementFactory(), new IDFactory());
+            if (BTree.BTreeSearch(id))
+            {
+                MessageBox.Show("Ya existe un elemento con ese ID en la tabla.");
+                return false;
+            }
             BTree.Insert(id, NewElement);
+            return true;
         }
 
         public static void Delete(ID id, string TreeName)
@@ -304,6 +410,8 @@ namespace MicroSQL
             }
             File.Delete(TreePath);
             BTree<TableElement, ID> BTree = new BTree<TableElement, ID>(Utilities.TreesDegree, TreePath, new TableElementFactory(), new IDFactory());
+            
+            
         }
     }
 }

@@ -20,8 +20,10 @@ namespace EstructurasDeDatos
 
         public List<T> GetElements()
         {
+            File = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             List<T> Elements = new List<T>();
             RecorrerInOrdenRecursivo(Root, Elements);
+            File.Dispose();
             return Elements;
         }
 
@@ -147,7 +149,7 @@ namespace EstructurasDeDatos
             FirstAvailablePointer++;
             TKey UpwardMovingKey = TKeyFactory.CreateNull();
             T UpwardMovingValue = TFactory.CreateNull();
-            Crawler.Split(Key, Value, RightSibling, Sibling, ref UpwardMovingKey, UpwardMovingValue);
+            Crawler.Split(Key, Value, RightSibling, Sibling, ref UpwardMovingKey, ref UpwardMovingValue);
             BNode<T, TKey> Child = null;
             for (int i = 0; i < Sibling.ChildrenPointers.Count; i++)
             {
@@ -252,14 +254,18 @@ namespace EstructurasDeDatos
         }
         public T GetValue(TKey Key)
         {
+            File = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             int Pointer = -1;
             BNode<T, TKey> ReachedNode = BTreeSearch(RootPointer, Key, out Pointer);
+            File.Dispose();
             return ReachedNode.Values[Pointer];
         }
         public bool BTreeSearch(TKey Key)
         {
+            File = new FileStream(FileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
             int posicion = -1;
             BNode<T, TKey> nodoObtenido = BTreeSearch(RootPointer, Key, out posicion);
+            File.Dispose();
             if (nodoObtenido == null)
             {
                 return false;
@@ -268,6 +274,7 @@ namespace EstructurasDeDatos
             {
                 return true;
             }
+            
         }
         public void Delete(TKey Key)
         {
