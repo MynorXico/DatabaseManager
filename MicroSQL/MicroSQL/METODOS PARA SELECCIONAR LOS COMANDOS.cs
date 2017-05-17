@@ -1,171 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Globalization;
-
-namespace MicroSQL
-{
-    public class Utilities
-    {
-        // Grado de los árboles a utilizar
-        public static int TreesDegree = 6;
-
-        // Datos utilizados como nulos
-        public static int NullInt = int.MinValue;
-        public static string NullDateTime = "00-00-00";
-        public static string NullVarChar = "";
-
-        // Rutas Predeterminadas
-        public static string DefaultPath = @"C:/microSQL/";
-        public static string DefaultTablesFolder = @"tablas/";
-        public static string DefaultTreesFolder = @"arbolesb/";
-        public static string DefaultFileName = "microSQL.ini";
-        public static string CompleteDefaultTablesFolder = DefaultPath + DefaultTablesFolder;
-        public static string CompleteDefaultTreesFolder = DefaultPath + DefaultTreesFolder;
-
-        // Formato de Variables de Diferentes Tipos de Datos
-        public static int IntegerSize = 11;
-        public static int VarCharSize = 100;
-        public static int DateTimeSize = 10;
-
-        // Definición de colores
-        public static Color BackgroundColorColor = ColorTranslator.FromHtml("#272822");
-        public static Color PlainTextColor = ColorTranslator.FromHtml("#F8F8F2");
-        public static Color DataTypesColor = ColorTranslator.FromHtml("#A6E22E");
-        public static Color ReservedWordsColor = ColorTranslator.FromHtml("#66D9EF");
-        public static Color QuotedWordsColor = ColorTranslator.FromHtml("#F92672");
-
-        // Diccionarios con palabras reservadas
-        public static Dictionary<string, string> DataTypes = new Dictionary<string, string>();
-        public static Dictionary<string, string> ReservedWords = new Dictionary<string, string>();
-
-        public static bool DictionaryIsLoaded = false;
-
-        /// <summary>
-        /// Llenar diccionarios con los datos existentes en el archivo o en caso de no
-        /// existir, crea uno nuevo.
-        /// </summary>
-        public static void Initialize()
-        {
-            if (File.Exists(DefaultPath + DefaultFileName))
-            {
-                FillDictionaries(DefaultPath + DefaultFileName);
-            }
-            else
-            {
-                List<string> Lines = new List<string>();
-                Lines.Add("SELECT, SELECT");
-                Lines.Add("FROM, FROM");
-                Lines.Add("DELETE FROM, DELETE FROM");
-                Lines.Add("WHERE, WHERE");
-                Lines.Add("CREATE TABLE, CREATE TABLE");
-                Lines.Add("DROP TABLE, DROP TABLE");
-                Lines.Add("INSERT INTO, INSERT INTO");
-                Lines.Add("VALUES, VALUES");
-                Lines.Add("GO, GO");
-
-                if (!Directory.Exists(DefaultPath))
-                {
-                    Directory.CreateDirectory(DefaultPath);
-                }
-                File.WriteAllLines(DefaultPath + DefaultFileName, Lines.ToArray());
-                FillDictionaries(DefaultPath + DefaultFileName);
-            }
-            DataTypes.Add("INT", "INT");
-            DataTypes.Add("VARCHAR(100)", "VARCHAR(100)");
-            DataTypes.Add("DATETIME", "DATETIME");
-            DataTypes.Add("PRIMARY KEY", "PRIMARY KEY");
-        }
-
-        /// <summary>
-        /// Llenar diccionario tomando los datos de un archivo .ini
-        /// </summary>
-        /// <param name="FilePath"></param>
-        public static void FillDictionaries(string FilePath)
-        {
-            ReservedWords = new Dictionary<string, string>();
-            string[] Lines = FileManagment.OpenFile(FilePath);
-            foreach (string Line in Lines)
-            {
-                string[] SeparatedValues = Line.Split(',');
-                string Key = SeparatedValues[0].Trim(' ');
-                string Value = SeparatedValues[1].Trim(' ');
-                ReservedWords.Add(Key, Value);
-            }
-            if (!Directory.Exists(DefaultPath))
-            {
-                Directory.CreateDirectory(DefaultPath);
-            }
-            File.WriteAllLines(DefaultPath + DefaultFileName, Lines);
-
-            DictionaryIsLoaded = true;
-        }
-
-        public static void RecognizeCode(string[] sintax, DataGridView Grid)
-        {
-            if (sintax.Length>1)
-            {
-                for (int i = 0; i < ReservedWords.Count; i++)
-                {
-                    if (ReservedWords.ElementAt(i).Value.Equals(sintax[0]))
-                    {
-                        DetectCommand(ReservedWords.ElementAt(i).Key.ToUpper().ToString(), sintax, Grid);
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("No hay nada para ejecutar!");
-            }
-        }
-
-        /// <summary>
-        /// Da color a la una palabra ingresada.
-        /// </summary>
-        /// <param name="word"> La palabra que será buscada y será formateada.</param>
-        /// <param name="color"> Color con que la palabra será formateada.</param>
-        /// <param name="startIndex"> Índice de la primera posición de búsqueda</param>
-        /// <param name="rt"> RichTextBox que contiene la palabra ingresada.</param>
-        public static void HighLightKeyWord(string word, Color color, int startIndex, RichTextBox rt)
-        {
-            string rtText = rt.Text.ToUpper();
-            if (rtText.Contains(word))
-            {
-                int index = -1;
-                int selectStart = rt.SelectionStart;
-
-                while ((index = rtText.IndexOf(word, (index + 1))) != -1)
-                {
-                    rt.Select((index + startIndex), word.Length);
-                    rt.SelectionColor = color;
-                    rt.Select(selectStart, 0);
-                    rt.SelectionColor = Color.White;
-                }
-            }
-        }
-
-        public static void SendToDetectCommand(string [] sintax, int count, DataGridView Grid){
-            string[] newSintax = new string[sintax.Length - count];
-            for (int i = 0; i < sintax.Length - count; i++)
-            {
-                newSintax[i] = sintax[count + i];
-            }
-            DetectCommand(newSintax[0], newSintax, Grid);
-        }
-
-        public static bool IsGO(string command)
-        {
-            return command.ToUpper().Equals(ReservedWords.ElementAt(8).Value.ToString());
-        }
-
-        public static void DetectCommand(string command, string[] sintax, DataGridView Grid)
+public static void DetectCommand(string command, string[] sintax, DataGridView Grid)
         {
             if (command.Equals("SELECT"))
             {
@@ -173,7 +6,7 @@ namespace MicroSQL
                 string tableName;
                 string ID;
                 string parameter;
-                if (sintax.Length > 1)
+                if (sintax.Length>1)
                 {
                     if (sintax[1].Equals("*"))
                     {
@@ -181,59 +14,28 @@ namespace MicroSQL
                         {
                             if (sintax[2].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
                             {
-                                if (sintax.Length > 3)
+                                if (sintax.Length>3)
                                 {
-                                    if (sintax.Length>3)
+                                    tableName = sintax[3];
+                                    if (!TableExists(tableName))
                                     {
-                                        if (sintax[3].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString()))
-                                        {
-                                            if (sintax.Length > 4)
-                                            {
-                                                tableName = sintax[3];
-                                                string[] idConditional = sintax[4].Split(' ');
-                                                if (idConditional.Length==3)
-                                                {
-                                                    if (true)
-                                                    {
-                                                        if (idConditional[1] != "=")
-                                                        {
-                                                            string IdSelected = idConditional[2];
-                                                        }
-                                                        else
-                                                        {
-                                                            MessageBox.Show("Erro en la condicional. Sentencia: " + command);
-                                                        }
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    MessageBox.Show("Erro en la condicional. Sentencia: "+command);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            tableName = sintax[3];
-                                            if (!TableExists(tableName))
-                                            {
-                                                MessageBox.Show("La tabla " + tableName + " no existe! Sentencia: " + ReservedWords[command]);
-                                            }
-                                            else
-                                            {
-                                                MessageBox.Show("Se seleccionaron todos los datos de la tabla: " + tableName);
-                                                TableManagment.SelectAllFields(Grid, tableName);
+                                        MessageBox.Show("La tabla "+tableName+" no existe! Sentencia: "+ ReservedWords[command]);
+                                    }
+                                    else
+                                    {
+                                        MessageBox.Show("Se seleccionaron todos los datos de la tabla: "+tableName);
+                                        TableManagment.SelectAllFields(Grid, tableName);
 
-                                                if (sintax.Length > 4)
-                                                {
-                                                    if (IsGO(sintax[4]))
-                                                    {
-                                                        SendToDetectCommand(sintax, 5, Grid);
-                                                    }
-                                                }
+
+
+                                        if (sintax.Length>4)
+                                        {
+                                            if (IsGO(sintax[4]))
+                                            {
+                                                SendToDetectCommand(sintax, 5, Grid);
                                             }
                                         }
                                     }
-                                    
                                 }
                             }
                         }
@@ -242,7 +44,7 @@ namespace MicroSQL
                     {
                         for (int i = 1; i < sintax.Length; i++)
                         {
-
+                            
                             string[] spaces = sintax[i].Split(' ');
                             if (spaces.Length == 1)
                             {
@@ -252,12 +54,12 @@ namespace MicroSQL
                                 }
                                 else
                                 {
-                                    if (i + 1 < sintax.Length)
+                                    if (i+1 < sintax.Length)
                                     {
-                                        if (sintax[i + 1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
+                                        if (sintax[i+1].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
                                         {
                                             parameters.Add(sintax[i]);
-                                            if (i + 2 < sintax.Length)
+                                            if (i+2<sintax.Length)
                                             {
                                                 tableName = sintax[i + 2];
                                                 if (!TableExists(tableName))
@@ -267,11 +69,11 @@ namespace MicroSQL
                                                 }
                                                 else
                                                 {
-                                                    if (i + 3 < sintax.Length)
+                                                    if (i+3<sintax.Length)
                                                     {
                                                         if (sintax[i + 3].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString()))
                                                         {
-                                                            if (i + 4 < sintax.Length)
+                                                            if (i+4 < sintax.Length)
                                                             {
                                                                 string[] idConditional = sintax[i + 4].Split(' ');
                                                                 if (idConditional.Length == 3)
@@ -280,24 +82,20 @@ namespace MicroSQL
                                                                     if (idConditional[1].Equals("="))
                                                                     {
                                                                         ID = idConditional[2];
-                                                                        MessageBox.Show("Se seleccionaron varios datos de la tabla: " + tableName + " con ID: " + ID);
+                                                                        MessageBox.Show("Se seleccionaron varios datos de la tabla: "+tableName+" con ID: "+ID);
 
                                                                         #region Selección de Datos
                                                                         TableManagment.Select(Grid, parameters.ToArray(), tableName, int.Parse(ID));
 
                                                                         #endregion
 
-                                                                        if (sintax.Length > parameters.Count + 5)
+                                                                        if (sintax.Length > parameters.Count+5)
                                                                         {
-                                                                            if (IsGO(sintax[parameters.Count + 5]))
+                                                                            if (IsGO(sintax[parameters.Count+5]))
                                                                             {
                                                                                 i = sintax.Length;
-                                                                                SendToDetectCommand(sintax, 6 + parameters.Count, Grid);
+                                                                                SendToDetectCommand(sintax, 6+parameters.Count, Grid);
                                                                             }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            i = sintax.Length;
                                                                         }
                                                                     }
                                                                     else
@@ -308,7 +106,7 @@ namespace MicroSQL
                                                                 }
                                                                 else
                                                                 {
-                                                                    MessageBox.Show("Error en la condicional, sentencia: " + ReservedWords[command]);
+                                                                    MessageBox.Show("Error en la condicional, sentencia: "+ReservedWords[command]);
                                                                     break;
                                                                 }
                                                             }
@@ -317,13 +115,13 @@ namespace MicroSQL
                                                         {
                                                             i = sintax.Length;
                                                             TableManagment.Select(Grid, parameters.ToArray(), tableName);
-                                                            if (parameters.Count + 3 < sintax.Length)
+                                                            if (parameters.Count+3<sintax.Length)
                                                             {
                                                                 if (IsGO(sintax[parameters.Count + 3]))
                                                                 {
                                                                     if (parameters.Count + 4 < sintax.Length)
                                                                     {
-                                                                        SendToDetectCommand(sintax, (parameters.Count + 4), Grid);
+                                                                        SendToDetectCommand(sintax, (parameters.Count +4),Grid);
                                                                     }
                                                                 }
                                                             }
@@ -349,15 +147,15 @@ namespace MicroSQL
                                         }
                                         else
                                         {
-                                            MessageBox.Show($"Hace falta la palabra reservada {ReservedWords["FROM"]}, o hace falta alguna , en los parametros de busqueda! Sentencia: " + ReservedWords[command]);
+                                            MessageBox.Show($"Hace falta la palabra reservada {ReservedWords["FROM"]}, o hace falta alguna , en los parametros de busqueda! Sentencia: "+ ReservedWords[command]);
                                             break;
                                         }
                                     }
                                 }
                             }
-
+                            
                         }
-                    }
+                    }                
                 }
             }
 
@@ -365,7 +163,7 @@ namespace MicroSQL
             {
                 string tableName = "";
                 string ID = "";
-                if (sintax.Length > 1)
+                if (sintax.Length>1)
                 {
                     tableName = sintax[1];
                     if (TableExists(tableName))
@@ -374,7 +172,7 @@ namespace MicroSQL
                         {
                             if (sintax[2].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString()))
                             {
-                                if (sintax.Length > 3)
+                                if (sintax.Length>3)
                                 {
                                     string[] elements = sintax[3].Split(' ');
                                     if (elements.Length == 3)
@@ -389,7 +187,7 @@ namespace MicroSQL
                                             TableManagment.Delete(id, tableName);
                                             #endregion
                                             MessageBox.Show("Se eliminara el dato en la tabla: " + tableName + " con ID: " + ID);
-                                            if (sintax.Length > 4)
+                                            if (sintax.Length>4)
                                             {
                                                 if (sintax[4].Equals(ReservedWords.ElementAt(8).Value.ToString()))
                                                 {
@@ -404,7 +202,7 @@ namespace MicroSQL
                                                     }
                                                     else
                                                     {
-                                                        string[] newSintax2 = { "" };
+                                                        string [] newSintax2 = { "" };
                                                         DetectCommand("", newSintax2, Grid);
                                                     }
                                                 }
@@ -420,7 +218,7 @@ namespace MicroSQL
                                         MessageBox.Show("La condicion de eliminacion no cuenta con el formato adecuado!");
                                     }
                                 }
-
+                                
                             }
                             else
                             {
@@ -450,7 +248,7 @@ namespace MicroSQL
                     }
                     else
                     {
-                        MessageBox.Show("Error, la tabla " + tableName + " no existe, sentencia: " + command);
+                        MessageBox.Show("Error, la tabla "+tableName+" no existe, sentencia: "+command);
                     }
                 }
             }
@@ -464,14 +262,14 @@ namespace MicroSQL
                 List<string> listaDateTime = new List<string>();
                 List<string> Parametros = new List<string>();
                 List<string> Tipos = new List<string>();
-                if (sintax.Length > 1)
+                if (sintax.Length>1)
                 {
                     tableName = sintax[1];
-                    if (sintax.Length > 2)
+                    if (sintax.Length>2)
                     {
                         if (sintax[2] != "(")
                         {
-                            MessageBox.Show("Sintaxis incorrecta, agregue ( en la sentencia de " + command);
+                            MessageBox.Show("Sintaxis incorrecta, agregue ( en la sentencia de "+command); 
                         }
                         else
                         {
@@ -483,7 +281,6 @@ namespace MicroSQL
                                     if (IsReservedOrDataType(spaces[0]))
                                     {
                                         MessageBox.Show("Error de sintaxis, el tipo de dato debe ir despues del nombre del parametro! Sentencia: " + command);
-                                        break;
                                     }
                                     else
                                     {
@@ -491,11 +288,11 @@ namespace MicroSQL
                                         {
                                             if (sintax[i].EndsWith(","))
                                             {
-                                                if (i + 1 < sintax.Length)
+                                                if (i+1<sintax.Length)
                                                 {
                                                     if (sintax[i + 1].Equals(")"))
                                                     {
-                                                        MessageBox.Show("Error de sintaxis, no puede haber una coma antes del parentesis de cierre de la tabla! Sentencia: " + command);
+                                                        MessageBox.Show("Error de sintaxis, no puede haber una coma antes del parentesis de cierre de la tabla! Sentencia: "+command);
                                                         break;
                                                     }
                                                     else
@@ -557,22 +354,10 @@ namespace MicroSQL
                                                         {
                                                             // SE CREA LA TABLA
                                                             if (ValidateTypeArrayLength(listaInt, listaVarchar, listaDateTime))
-                                                            {
-                                                                if(TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName))
-                                                                {
-
-                                                                }
-                                                                else
-                                                                {
-                                                                    break;
-                                                                }
-                                                            }
+                                                                TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName);
                                                             else
-                                                            {
                                                                 MessageBox.Show("No se permite tener más de 3 elementos por tipo de dato.");
-                                                                break;
-                                                            }
-                                                            
+
                                                             if (sintax.Length > listaDateTime.Count + listaInt.Count + listaVarchar.Count + 1 + 4)
                                                             {
                                                                 int count = listaDateTime.Count + listaInt.Count + listaVarchar.Count + 1 + 4;
@@ -612,9 +397,9 @@ namespace MicroSQL
                                                 {
                                                     if (sintax[i].EndsWith(","))
                                                     {
-                                                        if (sintax[i + 1] == ")")
+                                                        if (sintax[i+1] == ")")
                                                         {
-                                                            MessageBox.Show("Erro de sintaxis, no debe haber una coma al final de los parametros de la tabla! Sentencia " + command);
+                                                            MessageBox.Show("Erro de sintaxis, no debe haber una coma al final de los parametros de la tabla! Sentencia "+command);
                                                             break;
                                                         }
                                                         else
@@ -639,21 +424,9 @@ namespace MicroSQL
                                                             {
                                                                 primaryKey = spaces[0];
                                                                 if (ValidateTypeArrayLength(listaInt, listaVarchar, listaDateTime))
-                                                                {
-                                                                    if (TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName))
-                                                                    {
-
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        break;
-                                                                    }
-                                                                }
+                                                                    TableManagment.CreateTable(Tipos, Parametros, primaryKey, tableName);
                                                                 else
-                                                                {
                                                                     MessageBox.Show("No se permite tener más de 3 elementos por tipo de dato.");
-                                                                    break;
-                                                                }
 
                                                                 if (sintax.Length > listaDateTime.Count + listaInt.Count + listaVarchar.Count + 1 + 4)
                                                                 {
@@ -715,11 +488,11 @@ namespace MicroSQL
                         MessageBox.Show("La tabla " + tableName + " no existe, no puede ser eliminada!");
                     }
                 }
-                if (sintax.Length > 2)
+                if (sintax.Length>2)
                 {
                     if (IsGO(sintax[2]))
                     {
-                        SendToDetectCommand(sintax, 3, Grid);
+                        SendToDetectCommand(sintax, 3,Grid);
                     }
                 }
             }
@@ -729,16 +502,16 @@ namespace MicroSQL
                 string tableName = "";
                 List<string> parameters = new List<string>();
                 List<string> newValues = new List<string>();
-                if (sintax.Length > 1)
+                if (sintax.Length>1)
                 {
                     tableName = sintax[1];
                     if (TableExists(tableName))
                     {
-                        if (sintax.Length > 2)
+                        if (sintax.Length>2)
                         {
                             if (sintax[2] != "(")
                             {
-                                MessageBox.Show("Hace falta un '(' en la sintaxis de: " + command);
+                                MessageBox.Show("Hace falta un '(' en la sintaxis de: "+command);
                             }
                             else
                             {
@@ -750,15 +523,13 @@ namespace MicroSQL
                                         {
                                             MessageBox.Show("No se permiten las comas al final de la instruccion.");
                                             break;
-                                        }
-                                        else
-                                        {
+                                        }else{
                                             parameters.Add(sintax[i].Trim(','));
                                         }
                                     }
                                     else
                                     {
-                                        if ((i + 1) < sintax.Length)
+                                        if ((i+1)<sintax.Length)
                                         {
                                             if (sintax[i + 1].Equals(")"))
                                             {
@@ -776,19 +547,19 @@ namespace MicroSQL
                         }
                         if (parameters.Count > 0)
                         {
-                            if (sintax.Length > (parameters.Count + 4))
+                            if (sintax.Length>(parameters.Count+4))
                             {
                                 if (sintax[parameters.Count + 4].ToUpper().Equals(ReservedWords.ElementAt(7).Value.ToString()))
                                 {
-                                    if (sintax.Length > parameters.Count + 4)
+                                    if (sintax.Length >parameters.Count+4)
                                     {
-                                        if (!sintax[parameters.Count + 5].Equals("("))
+                                        if (!sintax[parameters.Count+5].Equals("("))
                                         {
-                                            MessageBox.Show("Hace falta un ( en la sintaxis de " + command);
+                                            MessageBox.Show("Hace falta un ( en la sintaxis de "+command);
                                         }
                                         else
                                         {
-                                            if (sintax.Length > parameters.Count + 5)
+                                            if (sintax.Length > parameters.Count+5)
                                             {
                                                 for (int i = parameters.Count + 6; i < sintax.Length; i++)
                                                 {
@@ -821,12 +592,12 @@ namespace MicroSQL
                                                     }
                                                 }
                                             }
-                                            if (parameters.Count == newValues.Count)
-                                            {
+                                            if (parameters.Count==newValues.Count)
+                                            {                     
                                                 if (TableManagment.Insert(newValues, tableName, parameters))
                                                     MessageBox.Show("Datos correctamente agregados a la tabla: " + tableName);
 
-                                                if (sintax.Length > (parameters.Count + newValues.Count + 7))
+                                                if (sintax.Length>(parameters.Count+newValues.Count+7))
                                                 {
                                                     if (sintax[parameters.Count + newValues.Count + 7].Equals(ReservedWords.ElementAt(8).Value.ToString()))
                                                     {
@@ -850,12 +621,12 @@ namespace MicroSQL
                                         }
                                     }
                                 }
-                            }
+                            } 
                         }
                     }
                     else
                     {
-                        MessageBox.Show("La tabla " + tableName + " no existe, sentencia: " + command);
+                        MessageBox.Show("La tabla "+tableName+" no existe, sentencia: "+command);
                     }
                 }
                 else
@@ -869,165 +640,3 @@ namespace MicroSQL
 
             }
         }
-
-        public static bool IsReservedOrDataType(string command)
-        {
-            foreach (var item in DataTypes.Values)
-            {
-                if (command.ToUpper().Equals(item.ToString()))
-                {
-                    return true;
-                }
-            }
-            foreach (var item in ReservedWords.Values)
-            {
-                if (command.ToUpper().Equals(item.ToString()))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool TableExists(string tableName)
-        {
-            return File.Exists(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree");
-        }
-       
-        public static bool DatatypeExists(string command)
-        {
-            foreach (var item in DataTypes.Values)
-            {
-                if (command.ToUpper().Equals(item.ToString()))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static void UpLoadFile()
-        {
-            string path = "microsql.ini";
-            if (!File.Exists(path))
-            {
-                Initialize();
-                string[] lines = new string[DataTypes.Count + ReservedWords.Count];
-                int count = 0;
-                //Agregar todos los datos del diccionario de Tipos de Dato 
-                for (int i = 0; i < DataTypes.Count; i++)
-                {
-                    lines[i] = DataTypes.ElementAt(i).Key.ToString() + "," + DataTypes.ElementAt(i).Value.ToString();
-                    count++;
-                }
-
-                //Agregar todos los datos del diccionario de palabras reservadas
-                for (int i = 0; i < ReservedWords.Count; i++)
-                {
-                    lines[count + i] = ReservedWords.ElementAt(i).Key.ToString() + "," + ReservedWords.ElementAt(i).Value.ToString();
-                }
-                File.WriteAllLines(path, lines);
-            }
-            else
-            {
-                string[] lines = File.ReadAllLines(path);
-                for (int i = 0; i < 4; i++)
-                {
-                    string[] words = lines[i].Split(',');
-                    DataTypes.Add(words[0], words[1]);
-                }
-
-                for (int i = 4; i < 13; i++)
-                {
-                    string[] words = lines[i].Split(',');
-                    ReservedWords.Add(words[0], words[1]);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Da color a las palabras entre comillas simples.
-        /// </summary>
-        /// <param name="rt">RichTextBox que contiene las palabras entre comillas.</param>
-        /// <param name="color">Color con el que se formateará las palabras entre comillas.</param>
-        public static void HighLightQuotedWords(RichTextBox rt, Color color)
-        {
-            Regex RegularExpression = new Regex("'(.*)(.*)'");
-
-            MatchCollection Collection = RegularExpression.Matches(rt.Text.ToUpper());
-            int OldSelection = rt.SelectionStart;
-
-            foreach (Match m in Collection)
-            {
-                rt.SelectionStart = m.Index;
-                rt.SelectionLength = m.Value.Length;
-                rt.SelectionColor = color;
-                rt.DeselectAll();
-            }
-            rt.SelectionStart = OldSelection;
-        }
-
-        /// <summary>
-        /// Convierte un INT a string con el formato indicado.
-        /// </summary>
-        /// <param name="i"> INT que será formateado.</param>
-        /// <returns> Cadena con el INT formateado.</returns>
-        public static string FormatInteger(int i)
-        {
-            return i.ToString().PadLeft(IntegerSize, '0');
-        }
-
-        /// <summary>
-        /// Convierte un VARCHAR a string con el formato indicado.
-        /// </summary>
-        /// <param name="s"> VARCHAR que será formateado.</param>
-        /// <returns> Cadena con el VARCHAR formateado.</returns>
-        public static string FormatVarChar(string s)
-        {
-            if (s.Length > 100)
-            {
-                throw new FormatException("El tamaño de la variable de tipo de dato VARCHAR no puede ser suprerior a 100.");
-            }
-            return s.PadLeft(IntegerSize, '-');
-        }
-
-        /// <summary>
-        /// Convierte un DATETIME a string con el formato indicado
-        /// </summary>
-        /// <param name="s"> DATETIME que será formateado.</param>
-        /// <returns> Cadena con el VARCHAR formateado.</returns>
-        public static string FormatDate(string s)
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("ar-BH");
-
-            StringBuilder Output = new StringBuilder();
-            DateTime Input;
-            if (DateTime.TryParse(s.Trim('\''), out Input))
-            {
-                Output.Append(Input.Day.ToString().PadLeft(2, '0'));
-                Output.Append("-");
-                Output.Append(Input.Month.ToString().PadLeft(2, '0'));
-                Output.Append("-");
-                Output.Append(Input.Year.ToString().Substring(2));
-            }
-            else
-            {
-                if (s.Trim('\'') == NullDateTime)
-                    Output.Append(NullDateTime);
-                else
-                    throw new FormatException("Verificar el formato de fecha.");
-            }
-            return Output.ToString();
-
-        }
-
-        private static bool ValidateTypeArrayLength(List<string> IntegerArray, List<string> VarCharArray, List<string> DateTimeArray)
-        {
-            if (IntegerArray.Count < 4 && VarCharArray.Count < 4 && DateTimeArray.Count < 4)
-                return true;
-            return false;
-        }
-
-
-    }
-}

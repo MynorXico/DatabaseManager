@@ -40,8 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryTree.cs" />
+    <Compile Include="BinaryTreeNode.cs" />
     <Compile Include="BNode.cs" />
     <Compile Include="BTree.cs" />
+    <Compile Include="Comparable.cs" />
     <Compile Include="FileManagment.cs" />
     <Compile Include="IAutoFormattable.cs" />
     <Compile Include="IFixedLength.cs" />

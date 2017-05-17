@@ -9,6 +9,11 @@ namespace MicroSQL
 {
     public class TableElementFactory : IFixedLengthFactory<TableElement>
     {
+        /// <summary>
+        /// Crea un TableElementFactory en base a una cadena con formato predeterminado
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public TableElement Create(string s)
         {
             string[] Data = s.Split(TableElement.DataSeparator[0]);
@@ -26,7 +31,10 @@ namespace MicroSQL
             }
             return Output;
         }
-
+        /// <summary>
+        /// Crea un TableElement con propieades vacías
+        /// </summary>
+        /// <returns></returns>
         public TableElement CreateNull()
         {
             return new TableElement();

@@ -11,6 +11,12 @@ namespace MicroSQL
 {
     public class TableManagment
     {
+        /// <summary>
+        /// Llena el control TreeView con la estructura deseada.
+        /// </summary>
+        /// <param name="tv"></param>
+        /// <param name="TreesFolder"></param>
+        /// <param name="TablesFolder"></param>
         public static void FillTreeeView(TreeView tv, string TreesFolder, string TablesFolder)
         {
             tv.Nodes.Clear();
@@ -42,26 +48,46 @@ namespace MicroSQL
             }
 
         }
-
+        /// <summary>
+        /// Verifica si el archivo existe
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static bool FileExists(string path)
         {
             return File.Exists(path);
         }
-
+        /// <summary>
+        /// Se crea la tabla
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="TreePath"></param>
         public static void CreateTree(string tableName, string TreePath)
         {
             BTree<TableElement, ID> NewTree = new BTree<TableElement, ID>(Utilities.TreesDegree, TreePath, new TableElementFactory(), new IDFactory());
 
         }
 
-        public static void CreateTable(List<string> Tipos, List<string> Parametros, string primaryID, string tableName)
+
+
+        /// <summary>
+        /// Creación de una tabla en base a parámetros y tipos de dato
+        /// </summary>
+        /// <param name="Tipos"></param>
+        /// <param name="Parametros"></param>
+        /// <param name="primaryID"></param>
+        /// <param name="tableName"></param>
+        public static bool CreateTable(List<string> Tipos, List<string> Parametros, string primaryID, string tableName)
+
         {
+            // Ruta del árbol y de la tabla
             string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree";
             string TablePath = Utilities.DefaultPath + Utilities.DefaultTablesFolder + tableName + ".table";
-
+            // Verifica si el archivo existe o no
             if (FileExists(TablePath))
             {
                 MessageBox.Show("La tabla " + tableName + " ya existe en el contexto actual.");
+                return false;
             }
             else
             {
@@ -97,6 +123,7 @@ namespace MicroSQL
             if (FileExists(TreePath))
             {
                 MessageBox.Show("La tabla " + tableName + " ya existe en el contexto actual.");
+                return false;
             }
             else
             {
@@ -106,10 +133,16 @@ namespace MicroSQL
                 }
                 CreateTree(tableName, TreePath);
                 MessageBox.Show("Tabla " + tableName + " creada correctamente!");
+                return true;
             }
 
         }
-
+        /// <summary>
+        ///  Permite mostrar los datos de columnas de una tabla en un DataGridView
+        /// </summary>
+        /// <param name="dgv"></param>
+        /// <param name="ColumnsNameSelection"></param>
+        /// <param name="TableName"></param>
         public static void Select(DataGridView dgv, string[] ColumnsNameSelection, string TableName)
         {
             ResetDataGridView(dgv);
@@ -195,7 +228,11 @@ namespace MicroSQL
             }
 
         }
-
+        /// <summary>
+        /// Permite mostrar los datos de todas las columnas de una tabla en un DataGridView
+        /// </summary>
+        /// <param name="dgv"></param>
+        /// <param name="TableName"></param>
         public static void SelectAllFields(DataGridView dgv, string TableName)
         {
             string[] LineasArchivo = FileManagment.OpenFile(Utilities.DefaultPath +
@@ -204,7 +241,13 @@ namespace MicroSQL
             string[] NombresColumna = LineasArchivo[1].Split(',');
             Select(dgv, NombresColumna, TableName);
         }
-
+        /// <summary>
+        /// Permite mostrar los datos de un elemento de algunas columnas de una tabla en un DataGridView
+        /// </summary>
+        /// <param name="dgv"></param>
+        /// <param name="ColumnsNameSelection"></param>
+        /// <param name="TableName"></param>
+        /// <param name="Id"></param>
         public static void Select(DataGridView dgv, string[] ColumnsNameSelection, string TableName, int Id)
         {
             ResetDataGridView(dgv);
@@ -290,12 +333,21 @@ namespace MicroSQL
                 dgv.Rows.Add(Row.ToArray());
 
         }
-
+        /// <summary>
+        /// Restablece el DataGridView
+        /// </summary>
+        /// <param name="rt"></param>
         private static void ResetDataGridView(DataGridView rt)
         {
             rt.Columns.Clear();
         }
-
+        /// <summary>
+        /// Permite la insersión de un elemento a la tabla
+        /// </summary>
+        /// <param name="Insersion"></param>
+        /// <param name="TreeName"></param>
+        /// <param name="Parameters"></param>
+        /// <returns></returns>
         public static bool Insert(List<string> Insersion, string TreeName, List<string> Parameters)
         {
             string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + TreeName + ".btree";
@@ -386,7 +438,11 @@ namespace MicroSQL
             BTree.Insert(id, NewElement);
             return true;
         }
-
+        /// <summary>
+        /// Permite la insersión de un elemento de la tabla
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="TreeName"></param>
         public static void Delete(ID id, string TreeName)
         {
             string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + TreeName + ".btree";
@@ -399,7 +455,10 @@ namespace MicroSQL
             BTree<TableElement, ID> BTree = new BTree<TableElement, ID>(Utilities.TreesDegree, TreePath, new TableElementFactory(), new IDFactory());
             BTree.Delete(id);
         }
-
+        /// <summary>
+        /// Permite la eliminación de un árbol
+        /// </summary>
+        /// <param name="TreeName"></param>
         public static void Delete(string TreeName)
         {
             string TreePath = Utilities.DefaultPath + Utilities.DefaultTreesFolder + TreeName + ".btree";

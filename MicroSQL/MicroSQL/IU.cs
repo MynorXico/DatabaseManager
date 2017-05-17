@@ -15,7 +15,7 @@ namespace MicroSQL
 {
     public partial class IU : Form
     {
-
+        int caracter; // Número de caracteres del RichTextBox
         public IU()
         {
             InitializeComponent();
@@ -157,6 +157,33 @@ namespace MicroSQL
 
             }
         }
-            
+
+        private void IU_Load(object sender, EventArgs e)
+        {
+            timer1.Interval = 10;
+            timer1.Start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            pbNumbering.Refresh();
+        }
+
+        private void pbNumbering_Paint(object sender, PaintEventArgs e)
+        {
+            caracter = 0;
+            int altura = rtbUserInput.GetPositionFromCharIndex(0).Y;
+            if (rtbUserInput.Lines.Length > 0)
+                for (int i = 0; i < rtbUserInput.Lines.Length; i++)
+                {
+                    e.Graphics.DrawString((i + 1).ToString(), rtbUserInput.Font, Brushes.Blue, pbNumbering.Width - (e.Graphics.MeasureString("1", RichTextBox.DefaultFont).Width + 10), altura);
+                    caracter += rtbUserInput.Lines[i].Length + 1;
+                    altura = rtbUserInput.GetPositionFromCharIndex(caracter).Y;
+                }
+            else
+                e.Graphics.DrawString(1.ToString(), rtbUserInput.Font, Brushes.Blue, pbNumbering.Width - (e.Graphics.MeasureString(1.ToString(), rtbUserInput.Font).Width + 10), altura);
+
+
+        }
     }
 }

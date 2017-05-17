@@ -1,10 +1,5 @@
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\BTree\bin\Debug\BTree.dll
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\BTree\bin\Debug\BTree.pdb
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\BTree\obj\Debug\BTree.csprojResolveAssemblyReference.cache
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\BTree\obj\Debug\BTree.dll
-C:\Users\Maynor\Documents\GitHub\DatabaseManager\MicroSQL\BTree\obj\Debug\BTree.pdb
-C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\BTree\bin\Debug\BTree.dll
-C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\BTree\bin\Debug\BTree.pdb
-C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\BTree\obj\Debug\BTree.csprojResolveAssemblyReference.cache
-C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\BTree\obj\Debug\BTree.dll
-C:\Users\Mansilla\Documents\DatabaseManager\MicroSQL\BTree\obj\Debug\BTree.pdb
+C:\Users\Maynor\Documents\GitHub\ProyectoEstructuras1Final\MicroSQL\BTree\bin\Debug\BTree.dll
+C:\Users\Maynor\Documents\GitHub\ProyectoEstructuras1Final\MicroSQL\BTree\bin\Debug\BTree.pdb
+C:\Users\Maynor\Documents\GitHub\ProyectoEstructuras1Final\MicroSQL\BTree\obj\Debug\BTree.csprojResolveAssemblyReference.cache
+C:\Users\Maynor\Documents\GitHub\ProyectoEstructuras1Final\MicroSQL\BTree\obj\Debug\BTree.dll
+C:\Users\Maynor\Documents\GitHub\ProyectoEstructuras1Final\MicroSQL\BTree\obj\Debug\BTree.pdb

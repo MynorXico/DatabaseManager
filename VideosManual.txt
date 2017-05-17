@@ -1,0 +1,11 @@
+1. Introduccion: https://www.youtube.com/watch?v=unHzJa1QidU
+2. Cambiar lenguaje: https://www.youtube.com/watch?v=u_QO6ZEX5Tc
+3. Create table: https://www.youtube.com/watch?v=krvkkHcBMPc
+4. Insert Into: https://www.youtube.com/watch?v=RvPL_W1Y-DQ
+5.1 Select Simple: https://www.youtube.com/watch?v=SHpQkznwWIo
+5.2 Select * https://www.youtube.com/watch?v=itc8vTuf0YA
+5.3 Select Condicional: https://www.youtube.com/watch?v=a5R-19JuinA
+6.1 Delete From https://www.youtube.com/watch?v=_6kh96OnNnU
+6.2 Delete condicional https://www.youtube.com/watch?v=qHOux6DB2tg
+7. Drop table: https://www.youtube.com/watch?v=DxzMPLopelo
+8. Sentencias anidadas: https://www.youtube.com/watch?v=brajWSZSq04
