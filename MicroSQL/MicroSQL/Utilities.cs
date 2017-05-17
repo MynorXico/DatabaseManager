@@ -107,6 +107,11 @@ namespace MicroSQL
             DictionaryIsLoaded = true;
         }
 
+        /// <summary>
+        /// Metodo para reconocer la sentencia que se esta ejecutanto actualmente
+        /// </summary>
+        /// <param name="sintax"></param>
+        /// <param name="Grid"></param>
         public static void RecognizeCode(string[] sintax, DataGridView Grid)
         {
             if (sintax.Length>1)
@@ -151,6 +156,13 @@ namespace MicroSQL
             }
         }
 
+
+        /// <summary>
+        /// Metodo creado para enviar a DetectCommand un nuevo sintax
+        /// </summary>
+        /// <param name="sintax"></param>
+        /// <param name="count"></param>
+        /// <param name="Grid"></param>
         public static void SendToDetectCommand(string [] sintax, int count, DataGridView Grid){
             string[] newSintax = new string[sintax.Length - count];
             for (int i = 0; i < sintax.Length - count; i++)
@@ -160,13 +172,25 @@ namespace MicroSQL
             DetectCommand(newSintax[0], newSintax, Grid);
         }
 
+        /// <summary>
+        /// Metodo creado para detectar si se debe seguir ejecutando una sentencia anidada o no
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public static bool IsGO(string command)
         {
             return command.ToUpper().Equals(ReservedWords.ElementAt(8).Value.ToString());
         }
-
+        
+        /// <summary>
+        /// Metodo creado para detectar las sentencias que se enviaron desde Reconize code
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="sintax"></param>
+        /// <param name="Grid"></param>
         public static void DetectCommand(string command, string[] sintax, DataGridView Grid)
         {
+            //En caso de que sea Select
             if (command.Equals("SELECT"))
             {
                 List<string> parameters = new List<string>();
@@ -175,16 +199,19 @@ namespace MicroSQL
                 string parameter;
                 if (sintax.Length > 1)
                 {
+                    //Caso SELECT *
                     if (sintax[1].Equals("*"))
                     {
                         if (sintax.Length > 2)
                         {
+                            //Reconocer si existe o no la palabra FROM
                             if (sintax[2].ToUpper().Equals(ReservedWords.ElementAt(1).Value.ToString()))
                             {
                                 if (sintax.Length > 3)
                                 {
                                     if (sintax.Length>3)
                                     {
+                                        //Deteccion de palabra reservada WHERE
                                         if (sintax[3].ToUpper().Equals(ReservedWords.ElementAt(3).Value.ToString()))
                                         {
                                             if (sintax.Length > 4)
@@ -201,13 +228,13 @@ namespace MicroSQL
                                                         }
                                                         else
                                                         {
-                                                            MessageBox.Show("Erro en la condicional. Sentencia: " + command);
+                                                            MessageBox.Show("Error en la condicional. Sentencia: " + command);
                                                         }
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    MessageBox.Show("Erro en la condicional. Sentencia: "+command);
+                                                    MessageBox.Show("Error en la condicional. Sentencia: "+command);
                                                 }
                                             }
                                         }
@@ -361,6 +388,7 @@ namespace MicroSQL
                 }
             }
 
+            //En caso de que sea DELETE FROM 
             if (command.Equals("DELETE FROM"))
             {
                 string tableName = "";
@@ -454,7 +482,7 @@ namespace MicroSQL
                     }
                 }
             }
-
+            //En caso de que sea CREATE TABLE
             if (command.Equals("CREATE TABLE"))
             {
                 string tableName = "";
@@ -863,13 +891,12 @@ namespace MicroSQL
 
                 }
             }
-
-            if (command.Equals("GO"))
-            {
-
-            }
         }
-
+        /// <summary>
+        /// Metodo creado para detectar sin una palabra es o no es una palabra reservada o un tipo de dato
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public static bool IsReservedOrDataType(string command)
         {
             foreach (var item in DataTypes.Values)
@@ -888,12 +915,20 @@ namespace MicroSQL
             }
             return false;
         }
-
+        /// <summary>
+        /// Metodo creado para detectar si una tabla existe o no
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         public static bool TableExists(string tableName)
         {
             return File.Exists(Utilities.DefaultPath + Utilities.DefaultTreesFolder + tableName + ".btree");
         }
-       
+       /// <summary>
+       /// Metodo que funciona para detectar un tipo de dato
+       /// </summary>
+       /// <param name="command"></param>
+       /// <returns></returns>
         public static bool DatatypeExists(string command)
         {
             foreach (var item in DataTypes.Values)

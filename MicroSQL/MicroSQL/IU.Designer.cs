@@ -170,7 +170,7 @@
             // 
             // pbNumbering
             // 
-            this.pbNumbering.Location = new System.Drawing.Point(282, 47);
+            this.pbNumbering.Location = new System.Drawing.Point(272, 47);
             this.pbNumbering.Name = "pbNumbering";
             this.pbNumbering.Size = new System.Drawing.Size(27, 485);
             this.pbNumbering.TabIndex = 10;
